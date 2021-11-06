@@ -1,0 +1,19 @@
+import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+
+Logger log = Logger();
+
+Color kColorBackground = const Color(0xff1F1D36);
+Color kColorInnerShadow = const Color(0xffEEEBDD).withOpacity(0.2);
+Color kColorMain = const Color(0xff864879);
+Color kColorSuccess = const Color(0xff66DE93);
+
+TextStyle kStyle = const TextStyle(
+  fontFamily: 'Dongle',
+  fontSize: 40,
+  height: 0.8,
+);
+
+String kColorToHexString(Color color) {
+  return color.value.toRadixString(16).substring(2, 8);
+}
