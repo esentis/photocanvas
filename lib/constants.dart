@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 
 Logger log = Logger();
@@ -8,9 +9,9 @@ Color kColorInnerShadow = const Color(0xffEEEBDD).withOpacity(0.2);
 Color kColorMain = const Color(0xff864879);
 Color kColorSuccess = const Color(0xff66DE93);
 
-TextStyle kStyle = const TextStyle(
+TextStyle kStyle = TextStyle(
   fontFamily: 'Dongle',
-  fontSize: 40,
+  fontSize: 40.sp,
   height: 0.8,
 );
 
