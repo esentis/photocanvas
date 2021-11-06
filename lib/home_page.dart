@@ -64,6 +64,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: kColorBackground,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: kColorBackground,
         title: Text(widget.title, style: kStyle),
       ),
