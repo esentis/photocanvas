@@ -4,7 +4,7 @@
 </p>
 <p align="center">
  <img src="https://api.codemagic.io/apps/6186d6dff780e4ed5f9c7596/default-workflow/status_badge.svg" alt="Version" /> <br><img src="https://img.shields.io/github/languages/code-size/esentis/photocanvas?color=1F1D36&style=for-the-badge&label=size" alt="Version" /></br>
- <a href='https://photocanvas-13696.firebaseapp.com'><img src='https://img.shields.io/website?down_message=Offline&style=for-the-badge&up_message=Online&url=https%3A%2F%2Fphotocanvas-13696.firebaseapp.com' alt='Website' /></a>
+ <a href='https://photocanvas-13696.firebaseapp.com'><img src='https://img.shields.io/website?down_message=Offline&style=for-the-badge&up_message=Online&url=https%3A%2F%2Fphotocanvas-13696.firebaseapp.com' alt='Website'  target="_blank" /></a>
 </br>
 </p>
 
