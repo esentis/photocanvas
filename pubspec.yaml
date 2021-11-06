@@ -40,6 +40,7 @@ dependencies:
   dotted_border: ^2.0.0+1
   top_snackbar_flutter: ^1.0.1
   flutter_screenutil: ^5.0.0+2
+  url_strategy: ^0.2.0
 
 dev_dependencies:
   flutter_test:
