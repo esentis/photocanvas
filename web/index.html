@@ -33,6 +33,24 @@
     <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-analytics.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyC_AksZ66y1vLW6HrjRfAQWja7g7Mj46VY",
+        authDomain: "photocanvas-13696.firebaseapp.com",
+        projectId: "photocanvas-13696",
+        storageBucket: "photocanvas-13696.appspot.com",
+        messagingSenderId: "921569504612",
+        appId: "1:921569504612:web:c1a18edf4e54a3e667de71",
+        measurementId: "G-EZTYF1TWXH",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
     <script>
       var serviceWorkerVersion = null;
       var scriptLoaded = false;
