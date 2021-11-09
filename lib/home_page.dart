@@ -26,6 +26,7 @@ class _HomePageState extends State<HomePage> {
   List<Color> activeColors = [];
   Uint8List? imageData;
   bool showOverlay = false;
+  Color kFooterTextColor = Colors.white;
 
   Future<void> loadImage(html.File file) async {
     final reader = html.FileReader();
@@ -287,21 +288,39 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-            Container(
-              height: 35.h,
-              width: 1.sw,
-              color: kColorBackground,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'esentis © ${DateTime.now().year.toString()}',
-                    style: kStyle.copyWith(
-                      fontSize: 30.sp,
-                      color: Colors.white,
-                    ),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              onEnter: (p) {
+                setState(() {
+                  kFooterTextColor = kColorMain;
+                });
+              },
+              onExit: (p) {
+                setState(() {
+                  kFooterTextColor = Colors.white;
+                });
+              },
+              child: GestureDetector(
+                onTap: () => launchLink('https://www.github.com/esentis'),
+                child: Container(
+                  height: 35.h,
+                  width: 1.sw,
+                  color: kColorBackground,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 300),
+                        style: kStyle.copyWith(
+                          fontSize: 30.sp,
+                          color: kFooterTextColor,
+                        ),
+                        child:
+                            Text('esentis © ${DateTime.now().year.toString()}'),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ],
