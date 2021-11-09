@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 Logger log = Logger();
 
@@ -17,4 +18,12 @@ TextStyle kStyle = TextStyle(
 
 String kColorToHexString(Color color) {
   return color.value.toRadixString(16).substring(2, 8);
+}
+
+Future<void> launchLink(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
 }
