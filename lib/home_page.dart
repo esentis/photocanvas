@@ -107,8 +107,8 @@ class _HomePageState extends State<HomePage> {
                     blur: 7,
                     color: kColorInnerShadow,
                     child: Container(
-                      width: mq.width * .6,
-                      height: 300.h,
+                      width: 600.r,
+                      height: 500.r,
                       decoration: BoxDecoration(
                         color: containerColor,
                         borderRadius: BorderRadius.circular(20),
