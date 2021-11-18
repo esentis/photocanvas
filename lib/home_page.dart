@@ -5,11 +5,15 @@ import 'dart:ui';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:drop_zone/drop_zone.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image/image.dart' as img;
+import 'package:image_pixels/image_pixels.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
 import 'package:photocanvas/widgets/inner_shadow.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.title}) : super(key: key);
@@ -28,13 +32,26 @@ class _HomePageState extends State<HomePage> {
   bool showOverlay = false;
   Color kFooterTextColor = Colors.white;
 
+  int? dx;
+  int? dy;
+
+  Color? hoveredColor;
+
+  Color? copiedColor;
+
   Future<void> loadImage(html.File file) async {
     final reader = html.FileReader();
     reader.readAsArrayBuffer(file);
     await reader.onLoad.first;
-    setState(() {
-      imageData = reader.result! as Uint8List;
-    });
+    imageData = reader.result! as Uint8List;
+    // ignore: cast_nullable_to_non_nullable
+    final img.Image image = img.decodeImage(imageData as Uint8List)!;
+    final img.Image resized = img.copyResize(
+      image,
+      width: 400,
+    );
+    imageData = img.encodeJpg(resized) as Uint8List;
+    setState(() {});
   }
 
   Future<void> onDrop(List<html.File>? files) async {
@@ -128,65 +145,99 @@ class _HomePageState extends State<HomePage> {
               ),
             // Image preview container
             if (imageData != null)
-              DropZone(
-                onDragEnter: () {
-                  log.wtf('Entering on dropzone');
-                  setState(() {
-                    showOverlay = true;
-                  });
-                },
-                onDragExit: () {
-                  log.wtf('Exiting  dropzone');
-                  setState(() {
-                    showOverlay = false;
-                  });
-                },
-                onDrop: (files) async {
-                  await onDrop(files);
-                },
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      color: Colors.transparent,
-                      child: Row(
+              Expanded(
+                child: DropZone(
+                  onDragEnter: () {
+                    setState(() {
+                      showOverlay = true;
+                    });
+                  },
+                  onDragExit: () {
+                    setState(() {
+                      showOverlay = false;
+                    });
+                  },
+                  onDrop: (files) async {
+                    await onDrop(files);
+                  },
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Stack(
                                 children: [
-                                  Container(
-                                    width: 350.r,
-                                    height: 350.r,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.r),
-                                      image: DecorationImage(
-                                        image: Image.memory(imageData!).image,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    left: 50.w,
-                                    right: 50.w,
-                                    top: 50.h,
-                                    bottom: 50.h,
-                                    child: IconButton(
-                                      iconSize: 90.r,
-                                      onPressed: () {
-                                        setState(() {
-                                          imageData = null;
-                                          activeColors = [];
-                                          containerText =
-                                              'Drop your image here';
-                                        });
-                                      },
-                                      icon: const Icon(
-                                        Icons.restore,
-                                        color: Colors.white,
+                                  Listener(
+                                    onPointerHover: (pointer) {
+                                      setState(() {
+                                        dx = pointer.localPosition.dx.toInt();
+                                        dy = pointer.localPosition.dy.toInt();
+                                      });
+                                    },
+                                    onPointerDown: (pointer) {
+                                      ScaffoldMessenger.of(context)
+                                          .clearSnackBars();
+                                      Clipboard.setData(
+                                        ClipboardData(
+                                          text: kColorToHexString(
+                                            hoveredColor ?? Colors.white,
+                                          ),
+                                        ),
+                                      );
+                                      copiedColor = hoveredColor;
+                                      showTopSnackBar(
+                                        context,
+                                        Material(
+                                          color: Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(12.r),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(12.r),
+                                            child: BackdropFilter(
+                                              filter: ImageFilter.blur(
+                                                sigmaX: 7.r,
+                                                sigmaY: 7.r,
+                                              ),
+                                              child: Container(
+                                                height: 80.h,
+                                                color: hoveredColor!
+                                                    .withOpacity(0.8),
+                                                child: Center(
+                                                  child: Text(
+                                                    '${kColorToHexString(hoveredColor ?? Colors.white)}\ncopied to clipboard!',
+                                                    style: kStyle.copyWith(
+                                                      color: Colors.white,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                      setState(() {});
+                                    },
+                                    child: MouseRegion(
+                                      cursor: SystemMouseCursors.click,
+                                      child: Container(
+                                        width: Image.memory(
+                                          imageData!,
+                                        ).width,
+                                        height: Image.memory(
+                                          imageData!,
+                                        ).height,
+                                        color: hoveredColor ?? Colors.white,
+                                        child: Image(
+                                          image: Image.memory(
+                                            imageData!,
+                                          ).image,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -201,66 +252,101 @@ class _HomePageState extends State<HomePage> {
                                   color: Colors.white,
                                 ),
                               ),
-                              CircleColor(
-                                color: paletteGenerator!.dominantColor!.color,
-                              ),
                               Text(
                                 'found in ${paletteGenerator!.dominantColor!.population} pixels',
                                 style: kStyle.copyWith(
                                   color: Colors.white,
-                                  fontSize: 30.sp,
+                                  fontSize: 25.sp,
                                 ),
                               ),
-                              SizedBox(
-                                height: 10.h,
+                              CircleColor(
+                                color: paletteGenerator!.dominantColor!.color,
                               ),
+                              Text(
+                                'Hovered color',
+                                style: kStyle.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              ImagePixels(
+                                imageProvider: Image.memory(
+                                  imageData!,
+                                ).image,
+                                builder: (_, img) {
+                                  hoveredColor = img.pixelColorAt!(
+                                    dx ?? 0,
+                                    dy ?? 0,
+                                  );
+                                  return CircleColor(
+                                    color: img.pixelColorAt!(
+                                      dx ?? 0,
+                                      dy ?? 0,
+                                    ),
+                                  );
+                                },
+                              ),
+                              Text(
+                                'Copied color',
+                                style: kStyle.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              CircleColor(
+                                color: copiedColor ?? Colors.white,
+                              )
                             ],
                           ),
-                          ScrollConfiguration(
-                            behavior: ScrollConfiguration.of(context).copyWith(
-                              dragDevices: {
-                                PointerDeviceKind.touch,
-                                PointerDeviceKind.mouse,
-                              },
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0.w),
-                              child: ClipRRect(
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 7.r,
-                                    sigmaY: 7.r,
-                                  ),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xff864879)
-                                          .withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(20.r),
+                          Flexible(
+                            child: ScrollConfiguration(
+                              behavior:
+                                  ScrollConfiguration.of(context).copyWith(
+                                dragDevices: {
+                                  PointerDeviceKind.touch,
+                                  PointerDeviceKind.mouse,
+                                },
+                              ),
+                              child: Padding(
+                                padding:
+                                    EdgeInsets.symmetric(horizontal: 8.0.w),
+                                child: ClipRRect(
+                                  child: BackdropFilter(
+                                    filter: ImageFilter.blur(
+                                      sigmaX: 7.r,
+                                      sigmaY: 7.r,
                                     ),
-                                    child: SizedBox(
-                                      height: mq.height - kToolbarHeight - 60.h,
-                                      width: mq.width * .6,
-                                      child: Scrollbar(
-                                        isAlwaysShown: true,
-                                        hoverThickness: 18,
-                                        radius: Radius.circular(20.r),
-                                        interactive: true,
-                                        showTrackOnHover: true,
-                                        child: GridView.count(
-                                          padding: EdgeInsets.zero,
-                                          crossAxisCount: 4,
-                                          children: [
-                                            if (activeColors.isNotEmpty)
-                                              ...activeColors.map(
-                                                (c) => Padding(
-                                                  padding:
-                                                      EdgeInsets.all(12.0.r),
-                                                  child: CircleColor(
-                                                    color: c,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xff864879)
+                                            .withOpacity(0.2),
+                                        borderRadius:
+                                            BorderRadius.circular(20.r),
+                                      ),
+                                      child: SizedBox(
+                                        height:
+                                            mq.height - kToolbarHeight - 60.h,
+                                        width: mq.width * .6,
+                                        child: Scrollbar(
+                                          isAlwaysShown: true,
+                                          hoverThickness: 18,
+                                          radius: Radius.circular(20.r),
+                                          interactive: true,
+                                          showTrackOnHover: true,
+                                          child: GridView.count(
+                                            padding: EdgeInsets.zero,
+                                            crossAxisCount: 4,
+                                            children: [
+                                              if (activeColors.isNotEmpty)
+                                                ...activeColors.map(
+                                                  (c) => Padding(
+                                                    padding:
+                                                        EdgeInsets.all(12.0.r),
+                                                    child: CircleColor(
+                                                      color: c,
+                                                    ),
                                                   ),
-                                                ),
-                                              )
-                                          ],
+                                                )
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -271,23 +357,12 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
-                    ),
-                    // if (showOverlay)
-                    //   Container(
-                    //     width: 1.sw,
-                    //     height: 1.sh - kTextTabBarHeight - 60.h,
-                    //     color: Colors.black.withOpacity(0.6),
-                    //     child: Center(
-                    //       child: Icon(
-                    //         Icons.add,
-                    //         size: 90.r,
-                    //         color: Colors.white,
-                    //       ),
-                    //     ),
-                    //   ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+
+            // FOOTER
             MouseRegion(
               cursor: SystemMouseCursors.click,
               onEnter: (p) {
