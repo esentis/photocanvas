@@ -31,13 +31,14 @@ class _HomePageState extends State<HomePage> {
   Uint8List? imageData;
   bool showOverlay = false;
   Color kFooterTextColor = Colors.white;
-
   int? dx;
   int? dy;
 
   Color? hoveredColor;
 
   Color? copiedColor;
+
+  final ScrollController _scrollController = ScrollController();
 
   Future<void> loadImage(html.File file) async {
     final reader = html.FileReader();
@@ -48,7 +49,8 @@ class _HomePageState extends State<HomePage> {
     final img.Image image = img.decodeImage(imageData as Uint8List)!;
     final img.Image resized = img.copyResize(
       image,
-      width: 400,
+      // width: 400,
+      height: 310,
     );
     imageData = img.encodeJpg(resized) as Uint8List;
     setState(() {});
@@ -78,7 +80,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final mq = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: kColorBackground,
       appBar: AppBar(
@@ -87,8 +88,6 @@ class _HomePageState extends State<HomePage> {
         title: Text(widget.title, style: kStyle),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -147,202 +146,198 @@ class _HomePageState extends State<HomePage> {
             if (imageData != null)
               Expanded(
                 child: DropZone(
-                  onDragEnter: () {
-                    setState(() {
-                      showOverlay = true;
-                    });
-                  },
-                  onDragExit: () {
-                    setState(() {
-                      showOverlay = false;
-                    });
-                  },
+                  onDragEnter: () {},
+                  onDragExit: () {},
                   onDrop: (files) async {
                     await onDrop(files);
                   },
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Column(
-                            children: [
-                              Stack(
-                                children: [
-                                  Listener(
-                                    onPointerHover: (pointer) {
-                                      setState(() {
-                                        dx = pointer.localPosition.dx.toInt();
-                                        dy = pointer.localPosition.dy.toInt();
-                                      });
-                                    },
-                                    onPointerDown: (pointer) {
-                                      ScaffoldMessenger.of(context)
-                                          .clearSnackBars();
-                                      Clipboard.setData(
-                                        ClipboardData(
-                                          text: kColorToHexString(
-                                            hoveredColor ?? Colors.white,
-                                          ),
-                                        ),
-                                      );
-                                      copiedColor = hoveredColor;
-                                      showTopSnackBar(
-                                        context,
-                                        Material(
-                                          color: Colors.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(12.r),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(12.r),
-                                            child: BackdropFilter(
-                                              filter: ImageFilter.blur(
-                                                sigmaX: 7.r,
-                                                sigmaY: 7.r,
-                                              ),
-                                              child: Container(
-                                                height: 80.h,
-                                                color: hoveredColor!
-                                                    .withOpacity(0.8),
-                                                child: Center(
-                                                  child: Text(
-                                                    '${kColorToHexString(hoveredColor ?? Colors.white)}\ncopied to clipboard!',
-                                                    style: kStyle.copyWith(
-                                                      color: Colors.white,
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                      setState(() {});
-                                    },
-                                    child: MouseRegion(
-                                      cursor: SystemMouseCursors.click,
+                          Listener(
+                            onPointerHover: (pointer) {
+                              setState(() {
+                                dx = pointer.localPosition.dx.toInt();
+                                dy = pointer.localPosition.dy.toInt();
+                              });
+                            },
+                            onPointerDown: (pointer) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              Clipboard.setData(
+                                ClipboardData(
+                                  text: kColorToHexString(
+                                    hoveredColor ?? Colors.white,
+                                  ),
+                                ),
+                              );
+                              copiedColor = hoveredColor;
+                              showTopSnackBar(
+                                context,
+                                Material(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12.r),
+                                    child: BackdropFilter(
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 7.r,
+                                        sigmaY: 7.r,
+                                      ),
                                       child: Container(
-                                        width: Image.memory(
-                                          imageData!,
-                                        ).width,
-                                        height: Image.memory(
-                                          imageData!,
-                                        ).height,
-                                        color: hoveredColor ?? Colors.white,
-                                        child: Image(
-                                          image: Image.memory(
-                                            imageData!,
-                                          ).image,
+                                        height: 80.h,
+                                        color: hoveredColor!.withOpacity(0.8),
+                                        child: Center(
+                                          child: Text(
+                                            '${kColorToHexString(hoveredColor ?? Colors.white)}\ncopied to clipboard!',
+                                            style: kStyle.copyWith(
+                                              color: Colors.white,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              Text(
-                                'Dominant color',
-                                style: kStyle.copyWith(
-                                  color: Colors.white,
+                                ),
+                              );
+                              setState(() {});
+                            },
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.precise,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20.r),
+                                child: Image(
+                                  image: Image.memory(
+                                    imageData!,
+                                  ).image,
                                 ),
                               ),
-                              Text(
-                                'found in ${paletteGenerator!.dominantColor!.population} pixels',
-                                style: kStyle.copyWith(
-                                  color: Colors.white,
-                                  fontSize: 25.sp,
-                                ),
-                              ),
-                              CircleColor(
-                                color: paletteGenerator!.dominantColor!.color,
-                              ),
-                              Text(
-                                'Hovered color',
-                                style: kStyle.copyWith(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              ImagePixels(
-                                imageProvider: Image.memory(
-                                  imageData!,
-                                ).image,
-                                builder: (_, img) {
-                                  hoveredColor = img.pixelColorAt!(
-                                    dx ?? 0,
-                                    dy ?? 0,
-                                  );
-                                  return CircleColor(
-                                    color: img.pixelColorAt!(
-                                      dx ?? 0,
-                                      dy ?? 0,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 40.h,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 14.0.w),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Dominant color',
+                                      style: kStyle.copyWith(
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                  );
-                                },
-                              ),
-                              Text(
-                                'Copied color',
-                                style: kStyle.copyWith(
-                                  color: Colors.white,
+                                    //    Text(
+                                    //   '(${paletteGenerator!.dominantColor!.population} pixels)',
+                                    //   style: kStyle.copyWith(
+                                    //     color: Colors.white,
+                                    //     fontSize: 20.sp,
+                                    //   ),
+                                    // ),
+                                    CircleColor(
+                                      color: paletteGenerator!
+                                          .dominantColor!.color,
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              CircleColor(
-                                color: copiedColor ?? Colors.white,
-                              )
-                            ],
+                                SizedBox(
+                                  width: 20.w,
+                                ),
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Hovered color',
+                                      style: kStyle.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    ImagePixels(
+                                      imageProvider: Image.memory(
+                                        imageData!,
+                                      ).image,
+                                      builder: (_, img) {
+                                        hoveredColor = img.pixelColorAt!(
+                                          dx ?? 0,
+                                          dy ?? 0,
+                                        );
+                                        return CircleColor(
+                                          cancelTap: true,
+                                          height: 100.r,
+                                          width: 100.r,
+                                          color: img.pixelColorAt!(
+                                            dx ?? 0,
+                                            dy ?? 0,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  width: 20.w,
+                                ),
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Copied color',
+                                      style: kStyle.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    CircleColor(
+                                      color: copiedColor ?? Colors.white,
+                                      cancelTap: true,
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                           Flexible(
-                            child: ScrollConfiguration(
-                              behavior:
-                                  ScrollConfiguration.of(context).copyWith(
-                                dragDevices: {
-                                  PointerDeviceKind.touch,
-                                  PointerDeviceKind.mouse,
-                                },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.0.w,
+                                vertical: 8.0.h,
                               ),
-                              child: Padding(
-                                padding:
-                                    EdgeInsets.symmetric(horizontal: 8.0.w),
-                                child: ClipRRect(
-                                  child: BackdropFilter(
-                                    filter: ImageFilter.blur(
-                                      sigmaX: 7.r,
-                                      sigmaY: 7.r,
+                              child: ClipRRect(
+                                child: BackdropFilter(
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 7.r,
+                                    sigmaY: 7.r,
+                                  ),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xff864879)
+                                          .withOpacity(0.2),
                                     ),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xff864879)
-                                            .withOpacity(0.2),
-                                        borderRadius:
-                                            BorderRadius.circular(20.r),
-                                      ),
-                                      child: SizedBox(
-                                        height:
-                                            mq.height - kToolbarHeight - 60.h,
-                                        width: mq.width * .6,
-                                        child: Scrollbar(
-                                          isAlwaysShown: true,
-                                          hoverThickness: 18,
-                                          radius: Radius.circular(20.r),
-                                          interactive: true,
-                                          showTrackOnHover: true,
-                                          child: GridView.count(
-                                            padding: EdgeInsets.zero,
-                                            crossAxisCount: 4,
+                                    child: RawScrollbar(
+                                      controller: _scrollController,
+                                      thumbColor: kColorMain,
+                                      isAlwaysShown: true,
+                                      radius: Radius.circular(20.r),
+                                      thickness: 5,
+                                      child: SingleChildScrollView(
+                                        controller: _scrollController,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(14.0.r),
+                                          child: Wrap(
                                             children: [
                                               if (activeColors.isNotEmpty)
                                                 ...activeColors.map(
-                                                  (c) => Padding(
-                                                    padding:
-                                                        EdgeInsets.all(12.0.r),
-                                                    child: CircleColor(
-                                                      color: c,
-                                                    ),
+                                                  (c) => CircleColor(
+                                                    color: c,
+                                                    onTap: () {
+                                                      setState(() {
+                                                        copiedColor = c;
+                                                      });
+                                                    },
                                                   ),
                                                 )
                                             ],
@@ -379,7 +374,7 @@ class _HomePageState extends State<HomePage> {
                 onTap: () => launchLink('https://www.github.com/esentis'),
                 child: Container(
                   height: 35.h,
-                  width: 1.sw,
+                  width: 200.w,
                   color: kColorBackground,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -400,7 +395,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
