@@ -12,7 +12,7 @@ Color kColorSuccess = const Color(0xff66DE93);
 
 TextStyle kStyle = TextStyle(
   fontFamily: 'Dongle',
-  fontSize: 40.sp,
+  fontSize: 30.sp,
   height: 0.8,
 );
 
