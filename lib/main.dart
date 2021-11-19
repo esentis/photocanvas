@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photocanvas/home_page.dart';
@@ -16,9 +17,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(1024, 768),
-      builder: () => const MaterialApp(
+      builder: () => MaterialApp(
         title: 'Photocanvas',
-        home: HomePage(title: 'Photocanvas'),
+        scrollBehavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        home: const HomePage(title: 'Photocanvas'),
       ),
     );
   }
