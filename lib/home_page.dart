@@ -234,13 +234,6 @@ class _HomePageState extends State<HomePage> {
                                         color: Colors.white,
                                       ),
                                     ),
-                                    //    Text(
-                                    //   '(${paletteGenerator!.dominantColor!.population} pixels)',
-                                    //   style: kStyle.copyWith(
-                                    //     color: Colors.white,
-                                    //     fontSize: 20.sp,
-                                    //   ),
-                                    // ),
                                     CircleColor(
                                       color: paletteGenerator!
                                           .dominantColor!.color,
