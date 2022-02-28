@@ -12,6 +12,7 @@ import 'package:image_pixels/image_pixels.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
+import 'package:photocanvas/widgets/copyright_footer.dart';
 import 'package:photocanvas/widgets/inner_shadow.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> {
   List<Color> activeColors = [];
   Uint8List? imageData;
   bool showOverlay = false;
-  Color kFooterTextColor = Colors.white;
+
   int? dx;
   int? dy;
 
@@ -351,41 +352,7 @@ class _HomePageState extends State<HomePage> {
               ),
 
             // FOOTER
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              onEnter: (p) {
-                setState(() {
-                  kFooterTextColor = kColorMain;
-                });
-              },
-              onExit: (p) {
-                setState(() {
-                  kFooterTextColor = Colors.white;
-                });
-              },
-              child: GestureDetector(
-                onTap: () => launchLink('https://www.github.com/esentis'),
-                child: Container(
-                  height: 35.h,
-                  width: 200.w,
-                  color: kColorBackground,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 300),
-                        style: kStyle.copyWith(
-                          fontSize: 30.sp,
-                          color: kFooterTextColor,
-                        ),
-                        child:
-                            Text('esentis © ${DateTime.now().year.toString()}'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            const CopyrightFooter()
           ],
         ),
       ),
