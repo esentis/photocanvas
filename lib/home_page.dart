@@ -314,7 +314,7 @@ class _HomePageState extends State<HomePage> {
                                     child: RawScrollbar(
                                       controller: _scrollController,
                                       thumbColor: kColorMain,
-                                      isAlwaysShown: true,
+                                      thumbVisibility: true,
                                       radius: Radius.circular(20.r),
                                       thickness: 5,
                                       child: SingleChildScrollView(
