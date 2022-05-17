@@ -44,8 +44,8 @@ String kColorToHexString(Color color) {
 }
 
 Future<void> launchLink(String url) async {
-  if (await canLaunch(url)) {
-    await launch(url);
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launchUrl(Uri.parse(url));
   } else {
     throw 'Could not launch $url';
   }
