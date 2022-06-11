@@ -36,7 +36,6 @@ dependencies:
   palette_generator: ^0.3.3
   logger: ^1.1.0
   drop_zone: ^1.0.2
-  lint: ^1.7.2
   dotted_border: ^2.0.0+1
   top_snackbar_flutter: ^1.0.1
   flutter_screenutil: ^5.0.0+2
@@ -44,6 +43,7 @@ dependencies:
   url_launcher: ^6.0.12
   image_pixels: ^3.0.0
   image: ^3.2.0
+  very_good_analysis: ^3.0.0
 
 dev_dependencies:
   flutter_test:
