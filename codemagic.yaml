@@ -23,7 +23,7 @@ workflows:
       - flutter config --enable-web
       - |
         # build web
-        flutter build web --release
+        flutter build web --web-renderer canvaskit --dart-define=BROWSER_IMAGE_DECODING_ENABLED=false --release
         cd build/web
         7z a -r ../web.zip ./*
       - |
