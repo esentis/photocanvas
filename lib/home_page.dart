@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
     if (image != null) {
       final img.Image resized = img.copyResize(
         image,
-        // width: 400,
+        width: 400,
         height: 310,
       );
       imageData = img.encodeJpg(resized) as Uint8List;
