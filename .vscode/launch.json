@@ -10,7 +10,8 @@
       "type": "dart",
       "flutterMode": "debug",
       "deviceId": "chrome",
-      "args": ["--web-renderer", "canvaskit"]
+      "args": ["--web-renderer", "html"]
+      // "args": ["--web-renderer", "canvaskit"]
     },
     {
       "name": "photocanvas (profile)",
