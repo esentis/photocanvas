@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:drop_zone/drop_zone.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -59,20 +60,21 @@ class _HomePageState extends State<HomePage> {
       );
       imageData = img.encodeJpg(resized) as Uint8List;
     }
-    imageData = img.encodeJpg(image!) as Uint8List;
+
     setState(() {});
   }
 
   Future<void> onDrop(List<html.File> files) async {
-    // showDialog<void>(
-    //   context: context,
-    //   builder: (context) => const Center(
-    //     child: CircularProgressIndicator(),
-    //   ),
-    // );
+    showDialog<void>(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
     final file = files[0];
     try {
-      await loadImage(file);
+      //  await loadImage(file);
+      await compute(loadImage, file);
     } catch (e) {
       log.e(e);
     }
