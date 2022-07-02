@@ -1,3 +1,5 @@
+// ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable
+
 import 'dart:html' as html;
 import 'dart:typed_data';
 import 'dart:ui';
@@ -49,10 +51,10 @@ class _HomePageState extends State<HomePage> {
     await reader.onLoad.first;
     imageData = reader.result as Uint8List;
 
-    // ignore: cast_nullable_to_non_nullable
-    final img.Image? image = img.decodeImage(imageData as Uint8List);
+    final image = img.decodeImage(imageData as Uint8List);
 
     if (image != null) {
+      // ignore: omit_local_variable_types
       final img.Image resized = img.copyResize(
         image,
         width: 400,
@@ -62,15 +64,48 @@ class _HomePageState extends State<HomePage> {
     }
 
     setState(() {});
+    Navigator.pop(context);
   }
 
   Future<void> onDrop(List<html.File> files) async {
     showDialog<void>(
       context: context,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.white.withOpacity(0.3),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 3,
+                sigmaY: 3,
+              ),
+              child: Container(
+                width: 250.w,
+                height: 150.h,
+                decoration: BoxDecoration(
+                  color: kColorBackground.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Center(
+                  child: Text(
+                    'Analyzing your image',
+                    style: kStyle.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
+    await Future.delayed(const Duration(milliseconds: 250), () {});
+
     final file = files[0];
     try {
       //  await loadImage(file);
@@ -125,7 +160,6 @@ class _HomePageState extends State<HomePage> {
                   });
                 },
                 onDrop: (List<html.File>? files) async {
-                  log.w('Files dropped $files');
                   if (files != null) {
                     await onDrop(files);
                   }
