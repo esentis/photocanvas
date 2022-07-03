@@ -3,3 +3,4 @@ linter:
   rules:
     sort_pub_dependencies: false
     avoid_web_libraries_in_flutter: false
+    lines_longer_than_80_chars: false
