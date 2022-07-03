@@ -44,27 +44,68 @@ class _HomePageState extends State<HomePage> {
 
   final ScrollController _scrollController = ScrollController();
 
+  bool isValidImage(String fileName) {
+    return fileName.toLowerCase().endsWith('jpg') ||
+        fileName.toLowerCase().endsWith('jpeg') ||
+        fileName.toLowerCase().endsWith('png') ||
+        fileName.toLowerCase().endsWith('gif') ||
+        fileName.toLowerCase().endsWith('webp') ||
+        fileName.toLowerCase().endsWith('avif');
+  }
+
   Future<void> loadImage(html.File file) async {
-    final reader = html.FileReader();
-    reader.readAsArrayBuffer(file);
+    if (isValidImage(file.name)) {
+      final reader = html.FileReader();
+      reader.readAsArrayBuffer(file);
 
-    await reader.onLoad.first;
-    imageData = reader.result as Uint8List;
+      await reader.onLoad.first;
+      imageData = reader.result as Uint8List;
 
-    final image = img.decodeImage(imageData as Uint8List);
+      final image = img.decodeImage(imageData as Uint8List);
 
-    if (image != null) {
-      // ignore: omit_local_variable_types
-      final img.Image resized = img.copyResize(
-        image,
-        width: 400,
-        height: 310,
+      if (image != null) {
+        // ignore: omit_local_variable_types
+        final img.Image resized = img.copyResize(
+          image,
+          width: 400,
+          height: 310,
+        );
+        imageData = img.encodeJpg(resized) as Uint8List;
+      }
+      setState(() {});
+      Navigator.pop(context);
+    } else {
+      Navigator.pop(context);
+      showTopSnackBar(
+        context,
+        Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(12.r),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12.r),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 7.r,
+                sigmaY: 7.r,
+              ),
+              child: Container(
+                height: 80.h,
+                color: Colors.red,
+                child: Center(
+                  child: Text(
+                    'File is not a valid image format\n(JPG, JPEG, PNG, GIF, WEBP)',
+                    style: kStyle.copyWith(
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       );
-      imageData = img.encodeJpg(resized) as Uint8List;
     }
-
-    setState(() {});
-    Navigator.pop(context);
   }
 
   Future<void> onDrop(List<html.File> files) async {
@@ -108,10 +149,9 @@ class _HomePageState extends State<HomePage> {
 
     final file = files[0];
     try {
-      //  await loadImage(file);
       await compute(loadImage, file);
     } catch (e) {
-      log.e(e);
+      kLog.e(e);
     }
 
     if (imageData != null) {
