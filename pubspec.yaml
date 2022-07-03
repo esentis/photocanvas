@@ -1,5 +1,5 @@
 name: photocanvas
-description: A new Flutter project.
+description: A useful tool to analyze image and extract the color palette.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -33,17 +33,17 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  palette_generator: ^0.3.2
+  palette_generator: ^0.3.3
   logger: ^1.1.0
   drop_zone: ^1.0.2
-  lint: ^1.7.2
   dotted_border: ^2.0.0+1
-  top_snackbar_flutter: ^1.0.1
+  top_snackbar_flutter: ^2.0.0
   flutter_screenutil: ^5.0.0+2
   url_strategy: ^0.2.0
   url_launcher: ^6.0.12
-  image_pixels: ^2.0.1
-  image: ^3.0.8
+  image_pixels: ^3.0.0
+  image: ^3.2.0
+  very_good_analysis: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -54,7 +54,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

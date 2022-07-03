@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(1024, 768),
-      builder: () => MaterialApp(
+      builder: (context, child) => MaterialApp(
         title: 'Photocanvas',
         scrollBehavior: ScrollConfiguration.of(context).copyWith(
           dragDevices: {
