@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-Logger log = Logger();
+Logger kLog = Logger();
 
 ///```dart
 ///Color(0xff1F1D36);
