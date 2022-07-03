@@ -174,7 +174,18 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: kColorBackground,
-        title: Text(widget.title, style: kStyle),
+        title: Column(
+          children: [
+            Text(widget.title, style: kStyle),
+            Text(
+              '1.0.1',
+              style: kStyle.copyWith(
+                fontSize: 16.sp,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Column(
