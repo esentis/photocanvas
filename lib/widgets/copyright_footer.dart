@@ -28,21 +28,16 @@ class _CopyrightFooterState extends State<CopyrightFooter> {
       child: GestureDetector(
         onTap: () => launchLink('https://www.github.com/esentis'),
         child: Container(
-          height: 35.h,
+          //  height: 35.h,
           width: 200.w,
           color: kColorBackground,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 300),
-                style: kStyle.copyWith(
-                  fontSize: 30.sp,
-                  color: kFooterTextColor,
-                ),
-                child: Text('esentis © ${DateTime.now().year.toString()}'),
-              ),
-            ],
+          child: AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 300),
+            style: kStyle.copyWith(
+              fontSize: 30.sp,
+              color: kFooterTextColor,
+            ),
+            child: Text('esentis © ${DateTime.now().year.toString()}'),
           ),
         ),
       ),
