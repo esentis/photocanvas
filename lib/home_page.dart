@@ -4,7 +4,6 @@ import 'dart:html' as html;
 import 'dart:typed_data';
 import 'dart:ui';
 
-import 'package:dotted_border/dotted_border.dart';
 import 'package:drop_zone/drop_zone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
 import 'package:photocanvas/widgets/copyright_footer.dart';
-import 'package:photocanvas/widgets/inner_shadow.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,13 +25,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Color containerColor = kColorMain;
+  Color containerColor = Colors.white;
   String containerText = 'Drop your image here';
   String focusedColorHex = '';
   PaletteGenerator? paletteGenerator;
   List<Color> activeColors = [];
   Uint8List? imageData;
+
   bool showOverlay = false;
+  bool hovering = false;
 
   int? dx;
   int? dy;
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
         // ignore: omit_local_variable_types
         final img.Image resized = img.copyResize(
           image,
-          width: 400,
+          //  width: 400,
           height: 310,
         );
         imageData = img.encodeJpg(resized) as Uint8List;
@@ -109,6 +109,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onDrop(List<html.File> files) async {
+    copiedColor = null;
     showDialog<void>(
       context: context,
       builder: (context) => Dialog(
@@ -170,18 +171,52 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kColorBackground,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: kColorBackground,
-        title: Column(
+        toolbarHeight: 100.h,
+        actions: [],
+        backgroundColor: Colors.white,
+        title: Stack(
           children: [
-            Text(widget.title, style: kStyle),
-            Text(
-              '1.0.1',
-              style: kStyle.copyWith(
-                fontSize: 16.sp,
-                color: Colors.white,
+            if (imageData != null)
+              ImagePixels(
+                imageProvider: Image.memory(
+                  imageData!,
+                ).image,
+                builder: (_, img) {
+                  hoveredColor = img.pixelColorAt!(
+                    dx ?? 0,
+                    dy ?? 0,
+                  );
+                  return const SizedBox();
+                },
+              ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Card(
+                elevation: 5,
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 13.0.h, horizontal: 25.w),
+                  child: Column(
+                    children: [
+                      Text(
+                        widget.title,
+                        style: kStyle.copyWith(
+                          color: kColorBackground,
+                        ),
+                      ),
+                      Text(
+                        '1.0.1',
+                        style: kStyle.copyWith(
+                          fontSize: 16.sp,
+                          color: kColorBackground,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
@@ -191,11 +226,9 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (imageData == null)
-              SizedBox(
-                height: 20.h,
-              ),
-            // The image dropzone
+            SizedBox(
+              height: 20.h,
+            ),
             if (imageData == null)
               DropZone(
                 onDragEnter: () {
@@ -206,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                 },
                 onDragExit: () {
                   setState(() {
-                    containerColor = kColorMain;
+                    containerColor = Colors.white;
                     containerText = 'Drop your image here';
                   });
                 },
@@ -215,29 +248,28 @@ class _HomePageState extends State<HomePage> {
                     await onDrop(files);
                   }
                 },
-                child: DottedBorder(
-                  borderType: BorderType.RRect,
-                  strokeWidth: 2,
-                  radius: const Radius.circular(20),
-                  padding: const EdgeInsets.all(12),
+                child: Card(
                   color: containerColor,
-                  child: InnerShadow(
-                    blur: 7,
-                    color: kColorInnerShadow,
-                    child: Container(
-                      width: 600.r,
-                      height: 500.r,
-                      decoration: BoxDecoration(
-                        color: containerColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Text(
-                          containerText,
-                          style: kStyle.copyWith(
-                            fontSize: 50.sp,
-                            color: Colors.white,
-                          ),
+                  shadowColor: containerText == 'Ready to drop'
+                      ? kColorSuccess
+                      : kColorBackground,
+                  elevation: 5,
+                  // shape: RoundedRectangleBorder(
+                  //   borderRadius: BorderRadius.circular(
+                  //     23.r,
+                  //   ),
+                  // ),
+                  child: SizedBox(
+                    width: 600.r,
+                    height: 500.r,
+                    child: Center(
+                      child: Text(
+                        containerText,
+                        style: kStyle.copyWith(
+                          fontSize: 50.sp,
+                          color: containerText == 'Ready to drop'
+                              ? Colors.white
+                              : kColorBackground,
                         ),
                       ),
                     ),
@@ -249,8 +281,12 @@ class _HomePageState extends State<HomePage> {
             if (imageData != null)
               Expanded(
                 child: DropZone(
-                  onDragEnter: () {},
-                  onDragExit: () {},
+                  onDragEnter: () {
+                    kLog.i('Entering image');
+                  },
+                  onDragExit: () {
+                    kLog.i('Exiting image');
+                  },
                   onDrop: (files) async {
                     if (files != null) {
                       await onDrop(files);
@@ -309,6 +345,17 @@ class _HomePageState extends State<HomePage> {
                         },
                         child: MouseRegion(
                           cursor: SystemMouseCursors.precise,
+                          onExit: (e) {
+                            hovering = false;
+                            hoveredColor = null;
+                            kLog.wtf('Exitting image');
+                            setState(() {});
+                          },
+                          onEnter: (e) {
+                            hovering = true;
+                            kLog.wtf('Hovering image');
+                            setState(() {});
+                          },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(20.r),
                             child: Image.memory(imageData!),
@@ -316,108 +363,96 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       SizedBox(
-                        height: 40.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 14.0.w),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  'Dominant color',
-                                  style: kStyle.copyWith(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                if (paletteGenerator != null)
-                                  if (paletteGenerator!.dominantColor != null)
-                                    CircleColor(
-                                      color: paletteGenerator!
-                                          .dominantColor!.color,
-                                    ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  'Hovered color',
-                                  style: kStyle.copyWith(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                ImagePixels(
-                                  imageProvider: Image.memory(
-                                    imageData!,
-                                  ).image,
-                                  builder: (_, img) {
-                                    hoveredColor = img.pixelColorAt!(
-                                      dx ?? 0,
-                                      dy ?? 0,
-                                    );
-                                    return CircleColor(
-                                      cancelTap: true,
-                                      height: 100.r,
-                                      width: 100.r,
-                                      color: img.pixelColorAt!(
-                                        dx ?? 0,
-                                        dy ?? 0,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  'Copied color',
-                                  style: kStyle.copyWith(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                CircleColor(
-                                  color: copiedColor ?? Colors.white,
-                                  cancelTap: true,
-                                )
-                              ],
-                            ),
-                          ],
-                        ),
+                        height: 20.h,
                       ),
                       Flexible(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.0.w,
-                            vertical: 8.0.h,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: const Color(0xff864879).withOpacity(0.2),
                           ),
-                          child: ClipRRect(
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(
-                                sigmaX: 7.r,
-                                sigmaY: 7.r,
-                              ),
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color:
-                                      const Color(0xff864879).withOpacity(0.2),
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 13.0.w),
+                            child: CustomScrollView(
+                              controller: _scrollController,
+                              slivers: [
+                                SliverAppBar(
+                                  toolbarHeight: 120.h,
+                                  primary: false,
+                                  floating: true,
+                                  backgroundColor: Colors.transparent,
+                                  flexibleSpace: Card(
+                                    color: Colors.white,
+                                    elevation: 5,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Column(
+                                          children: [
+                                            Text(
+                                              'Dominant color',
+                                              style: kStyle.copyWith(
+                                                color: kColorBackground,
+                                              ),
+                                            ),
+                                            if (paletteGenerator != null)
+                                              if (paletteGenerator!
+                                                      .dominantColor !=
+                                                  null)
+                                                CircleColor(
+                                                  color: paletteGenerator!
+                                                      .dominantColor!.color,
+                                                ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          width: 20.w,
+                                        ),
+                                        if (copiedColor != null)
+                                          Column(
+                                            children: [
+                                              Text(
+                                                'Copied color',
+                                                style: kStyle.copyWith(
+                                                  color: kColorBackground,
+                                                ),
+                                              ),
+                                              CircleColor(
+                                                color: copiedColor!,
+                                                cancelTap: true,
+                                              )
+                                            ],
+                                          ),
+                                        SizedBox(
+                                          width: 20.w,
+                                        ),
+                                        if (hoveredColor != null &&
+                                            kColorToHexString(
+                                                  hoveredColor!,
+                                                ) !=
+                                                '9e9e9e')
+                                          Column(
+                                            children: [
+                                              Text(
+                                                'Hovered color',
+                                                style: kStyle.copyWith(
+                                                  color: kColorBackground,
+                                                ),
+                                              ),
+                                              CircleColor(
+                                                color: hoveredColor!,
+                                                cancelTap: true,
+                                              )
+                                            ],
+                                          ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                child: RawScrollbar(
-                                  controller: _scrollController,
-                                  thumbColor: kColorMain,
-                                  thumbVisibility: true,
-                                  radius: Radius.circular(20.r),
-                                  thickness: 5,
-                                  child: SingleChildScrollView(
-                                    controller: _scrollController,
+                                SliverToBoxAdapter(
+                                  child: Card(
                                     child: Padding(
                                       padding: EdgeInsets.all(14.0.r),
                                       child: Wrap(
@@ -438,7 +473,7 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ),

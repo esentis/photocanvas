@@ -25,19 +25,29 @@ class _CopyrightFooterState extends State<CopyrightFooter> {
           kFooterTextColor = Colors.white;
         });
       },
-      child: GestureDetector(
-        onTap: () => launchLink('https://www.github.com/esentis'),
-        child: Container(
-          //  height: 35.h,
-          width: 200.w,
-          color: kColorBackground,
-          child: AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 300),
-            style: kStyle.copyWith(
-              fontSize: 30.sp,
-              color: kFooterTextColor,
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: 5.h,
+          top: 5.h,
+        ),
+        child: GestureDetector(
+          onTap: () => launchLink('https://www.github.com/esentis'),
+          child: Card(
+            elevation: 5,
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 300),
+              style: kStyle.copyWith(
+                fontSize: 30.sp,
+                color: kFooterTextColor,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  'esentis © ${DateTime.now().year.toString()}',
+                  style: kStyle.copyWith(color: kColorBackground),
+                ),
+              ),
             ),
-            child: Text('esentis © ${DateTime.now().year.toString()}'),
           ),
         ),
       ),
