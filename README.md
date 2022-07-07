@@ -10,4 +10,4 @@
 
 ---
 
-<img src="./photocanvas" alt="showcase"/>
+<img src="./photocanvas.gif" alt="showcase"/>
