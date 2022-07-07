@@ -81,7 +81,7 @@ class _CircleColorState extends State<CircleColor> {
                 ),
                 style: kStyle.copyWith(
                   fontSize: 25.sp,
-                  color: Colors.white,
+                  color: kColorBackground,
                 ),
               ),
               Container(
@@ -90,6 +90,7 @@ class _CircleColorState extends State<CircleColor> {
                 decoration: BoxDecoration(
                   color: widget.color,
                   shape: BoxShape.circle,
+                  border: Border.all(color: kColorBackground.withOpacity(0.6)),
                 ),
               ),
             ],
