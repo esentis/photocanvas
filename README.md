@@ -10,4 +10,4 @@
 
 ---
 
-<img src="./photocanvas.gif" alt="showcase"/>
+<img src="https://i.imgur.com/l9jVPZn.gif" alt="showcase"/>
