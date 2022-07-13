@@ -15,6 +15,7 @@ import 'package:lottie/lottie.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
+import 'package:photocanvas/widgets/title.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class HomePage extends StatefulWidget {
@@ -232,42 +233,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   return const SizedBox();
                 },
               ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: GestureDetector(
-                onTap: () => launchLink('https://www.github.com/esentis'),
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: Card(
-                    elevation: 5,
-                    shadowColor: kColorBackground,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 13.0.h,
-                        horizontal: 25.w,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            widget.title,
-                            style: kStyle.copyWith(
-                              color: kColorBackground,
-                            ),
-                          ),
-                          Text(
-                            '1.1.0',
-                            style: kStyle.copyWith(
-                              fontSize: 16.sp,
-                              color: kColorBackground,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            PhotocanvasTitle(title: widget.title),
           ],
         ),
       ),
