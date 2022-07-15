@@ -15,6 +15,7 @@ import 'package:lottie/lottie.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
+import 'package:photocanvas/widgets/copied_color_snackbar.dart';
 import 'package:photocanvas/widgets/title.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -324,32 +325,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           copiedColor = hoveredColor;
                           showTopSnackBar(
                             context,
-                            Material(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(12.r),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12.r),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 7.r,
-                                    sigmaY: 7.r,
-                                  ),
-                                  child: Container(
-                                    height: 80.h,
-                                    color: hoveredColor!.withOpacity(0.8),
-                                    child: Center(
-                                      child: Text(
-                                        '${kColorToHexString(hoveredColor ?? Colors.white)}\ncopied to clipboard!',
-                                        style: kStyle.copyWith(
-                                          color: Colors.white,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            CopiedColorSnackbar(hoveredColor: hoveredColor),
                           );
                           setState(() {});
                         },
