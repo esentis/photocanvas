@@ -1,7 +1,6 @@
 // ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable
 
 import 'dart:html' as html;
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:drop_zone/drop_zone.dart';
