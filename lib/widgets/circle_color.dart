@@ -22,10 +22,10 @@ class CircleColor extends StatefulWidget {
   final VoidCallback? onTap;
   final bool cancelTap;
   @override
-  _CircleColorState createState() => _CircleColorState();
+  CircleColorState createState() => CircleColorState();
 }
 
-class _CircleColorState extends State<CircleColor> {
+class CircleColorState extends State<CircleColor> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
