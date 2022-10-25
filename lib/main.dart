@@ -1,10 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:photocanvas/helper/utils.dart';
 import 'package:photocanvas/home_page.dart';
 import 'package:url_strategy/url_strategy.dart';
 
-void main() {
+void main() async {
+  final packageInfo = await PackageInfo.fromPlatform();
+
+  Utils.version = packageInfo.version;
   setPathUrlStrategy();
   runApp(const MyApp());
 }
@@ -15,18 +19,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(1024, 768),
-      builder: (context, child) => MaterialApp(
-        title: 'Photocanvas',
-        scrollBehavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-          },
-        ),
-        home: const HomePage(title: 'Photocanvas'),
+    return MaterialApp(
+      title: 'Photocanvas',
+      scrollBehavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
       ),
+      home: const HomePage(title: 'Photocanvas'),
     );
   }
 }

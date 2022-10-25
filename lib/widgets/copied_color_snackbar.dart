@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photocanvas/constants.dart';
 
 class CopiedColorSnackbar extends StatelessWidget {
@@ -16,16 +15,16 @@ class CopiedColorSnackbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(12.r),
+      borderRadius: BorderRadius.circular(12),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(12),
         child: BackdropFilter(
           filter: ImageFilter.blur(
-            sigmaX: 7.r,
-            sigmaY: 7.r,
+            sigmaX: 7,
+            sigmaY: 7,
           ),
           child: Container(
-            height: 80.h,
+            height: 80,
             color: hoveredColor!.withOpacity(0.8),
             child: Center(
               child: Text(

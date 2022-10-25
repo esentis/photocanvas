@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photocanvas/constants.dart';
+import 'package:photocanvas/helper/utils.dart';
 
 class PhotocanvasTitle extends StatelessWidget {
   const PhotocanvasTitle({
@@ -21,10 +21,13 @@ class PhotocanvasTitle extends StatelessWidget {
           child: Card(
             elevation: 5,
             shadowColor: kColorBackground,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 13.0.h,
-                horizontal: 25.w,
+              padding: const EdgeInsets.symmetric(
+                vertical: 13,
+                horizontal: 25,
               ),
               child: Column(
                 children: [
@@ -32,12 +35,13 @@ class PhotocanvasTitle extends StatelessWidget {
                     title,
                     style: kStyle.copyWith(
                       color: kColorBackground,
+                      fontSize: 40,
                     ),
                   ),
                   Text(
-                    '1.1.0',
+                    '${Utils.version}',
                     style: kStyle.copyWith(
-                      fontSize: 16.sp,
+                      fontSize: 16,
                       color: kColorBackground,
                     ),
                   ),

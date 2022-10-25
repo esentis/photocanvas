@@ -1,7 +1,6 @@
 // ignore_for_file: only_throw_errors
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,9 +33,9 @@ Color kColorSuccess = const Color(0xff66DE93);
 /// fontSize: 30.sp,
 /// height: 0.8,
 /// ```
-TextStyle kStyle = TextStyle(
+TextStyle kStyle = const TextStyle(
   fontFamily: 'Dongle',
-  fontSize: 30.sp,
+  fontSize: 30,
   height: 0.8,
 );
 
