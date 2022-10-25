@@ -2,9 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:photocanvas/constants.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class CircleColor extends StatefulWidget {
   const CircleColor({
@@ -22,10 +20,10 @@ class CircleColor extends StatefulWidget {
   final VoidCallback? onTap;
   final bool cancelTap;
   @override
-  _CircleColorState createState() => _CircleColorState();
+  CircleColorState createState() => CircleColorState();
 }
 
-class _CircleColorState extends State<CircleColor> {
+class CircleColorState extends State<CircleColor> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
@@ -40,20 +38,18 @@ class _CircleColorState extends State<CircleColor> {
                 Clipboard.setData(
                   ClipboardData(text: kColorToHexString(widget.color)),
                 );
-                showTopSnackBar(
-                  context,
-                  Material(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(12.r),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12.r),
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: widget.color,
+                    content: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
                       child: BackdropFilter(
                         filter: ImageFilter.blur(
-                          sigmaX: 7.r,
-                          sigmaY: 7.r,
+                          sigmaX: 7,
+                          sigmaY: 7,
                         ),
                         child: Container(
-                          height: 80.h,
+                          height: 80,
                           color: widget.color.withOpacity(0.8),
                           child: Center(
                             child: Text(
@@ -72,7 +68,7 @@ class _CircleColorState extends State<CircleColor> {
                 widget.onTap?.call();
               },
         child: Padding(
-          padding: EdgeInsets.all(8.0.r),
+          padding: const EdgeInsets.all(8),
           child: Column(
             children: [
               Text(
@@ -80,13 +76,13 @@ class _CircleColorState extends State<CircleColor> {
                   widget.color,
                 ),
                 style: kStyle.copyWith(
-                  fontSize: 25.sp,
+                  fontSize: 25,
                   color: kColorBackground,
                 ),
               ),
               Container(
-                height: widget.height ?? 50.r,
-                width: widget.width ?? 50.r,
+                height: widget.height ?? 50,
+                width: widget.width ?? 50,
                 decoration: BoxDecoration(
                   color: widget.color,
                   shape: BoxShape.circle,

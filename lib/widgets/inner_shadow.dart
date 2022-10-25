@@ -1,3 +1,5 @@
+// ignore_for_file: omit_local_variable_types, library_private_types_in_public_api
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';

@@ -1,21 +1,19 @@
 // ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable
 
 import 'dart:html' as html;
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:drop_zone/drop_zone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_pixels/image_pixels.dart';
-import 'package:lottie/lottie.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import 'package:photocanvas/widgets/copied_color_snackbar.dart';
+import 'package:photocanvas/widgets/title.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.title}) : super(key: key);
@@ -79,20 +77,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       Navigator.pop(context);
     } else {
       Navigator.pop(context);
-      showTopSnackBar(
-        context,
-        Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(12.r),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12.r),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
             child: BackdropFilter(
               filter: ImageFilter.blur(
-                sigmaX: 7.r,
-                sigmaY: 7.r,
+                sigmaX: 7,
+                sigmaY: 7,
               ),
               child: Container(
-                height: 80.h,
+                height: 80,
                 color: Colors.red,
                 child: Center(
                   child: Text(
@@ -118,7 +114,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(12),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -128,27 +124,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 sigmaX: 3,
                 sigmaY: 3,
               ),
-              child: Container(
-                width: 150.r,
-                height: 150.r,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Lottie.asset('assets/cogs.json'),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Analyzing your image',
+                    textAlign: TextAlign.center,
+                    style: kStyle.copyWith(
+                      color: Colors.red,
                     ),
-                    Text(
-                      'Analyzing your image',
-                      textAlign: TextAlign.center,
-                      style: kStyle.copyWith(
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -196,24 +182,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       backgroundColor: const Color(0xffF3F1F5),
       appBar: AppBar(
         centerTitle: true,
-        toolbarHeight: 100.h,
+        toolbarHeight: imageData != null ? 150 : 100,
         shadowColor: kColorBackground,
         elevation: 5,
         actions: [
           if (imageData != null)
-            GestureDetector(
-              onTap: () {
+            TextButton(
+              onPressed: () {
                 setState(() {
                   imageData = null;
                 });
               },
-              child: Padding(
-                padding: EdgeInsets.only(right: 20.0.w),
-                child: Lottie.asset(
-                  'assets/reset.json',
-                  width: 35.w,
-                ),
-              ),
+              child: const Text('Reset'),
             ),
         ],
         backgroundColor: Colors.white,
@@ -232,42 +212,66 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   return const SizedBox();
                 },
               ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: GestureDetector(
-                onTap: () => launchLink('https://www.github.com/esentis'),
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: Card(
-                    elevation: 5,
-                    shadowColor: kColorBackground,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 13.0.h,
-                        horizontal: 25.w,
+            if (imageData == null)
+              PhotocanvasTitle(title: widget.title)
+            else
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        'Dominant color',
+                        style: kStyle.copyWith(
+                          color: kColorBackground,
+                        ),
                       ),
-                      child: Column(
-                        children: [
-                          Text(
-                            widget.title,
-                            style: kStyle.copyWith(
-                              color: kColorBackground,
-                            ),
+                      if (paletteGenerator != null)
+                        if (paletteGenerator!.dominantColor != null)
+                          CircleColor(
+                            color: paletteGenerator!.dominantColor!.color,
                           ),
-                          Text(
-                            '1.1.0',
-                            style: kStyle.copyWith(
-                              fontSize: 16.sp,
-                              color: kColorBackground,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ],
                   ),
-                ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  if (copiedColor != null)
+                    Column(
+                      children: [
+                        Text(
+                          'Copied color',
+                          style: kStyle.copyWith(
+                            color: kColorBackground,
+                          ),
+                        ),
+                        CircleColor(
+                          color: copiedColor!,
+                          cancelTap: true,
+                        )
+                      ],
+                    ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  if (hoveredColor != null && hovering)
+                    Column(
+                      children: [
+                        Text(
+                          'Hovered color',
+                          style: kStyle.copyWith(
+                            color: kColorBackground,
+                          ),
+                        ),
+                        CircleColor(
+                          color: hoveredColor!,
+                          cancelTap: true,
+                        )
+                      ],
+                    ),
+                ],
               ),
-            ),
           ],
         ),
       ),
@@ -275,8 +279,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            SizedBox(
-              height: 20.h,
+            const SizedBox(
+              height: 20,
             ),
             if (imageData == null)
               DropZone(
@@ -299,21 +303,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 },
                 child: Card(
                   color: containerColor,
-                  shadowColor: containerText == 'Ready to drop'
-                      ? kColorSuccess
-                      : kColorBackground,
+                  shadowColor: containerText == 'Ready to drop' ? kColorSuccess : kColorBackground,
                   elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   child: SizedBox(
-                    width: 600.r,
-                    height: 500.r,
+                    width: 600,
+                    height: 500,
                     child: Center(
                       child: Text(
                         containerText,
                         style: kStyle.copyWith(
-                          fontSize: 50.sp,
-                          color: containerText == 'Ready to drop'
-                              ? Colors.white
-                              : kColorBackground,
+                          fontSize: 50,
+                          color: containerText == 'Ready to drop' ? Colors.white : kColorBackground,
                         ),
                       ),
                     ),
@@ -356,33 +359,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ),
                           );
                           copiedColor = hoveredColor;
-                          showTopSnackBar(
-                            context,
-                            Material(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(12.r),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12.r),
-                                child: BackdropFilter(
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 7.r,
-                                    sigmaY: 7.r,
-                                  ),
-                                  child: Container(
-                                    height: 80.h,
-                                    color: hoveredColor!.withOpacity(0.8),
-                                    child: Center(
-                                      child: Text(
-                                        '${kColorToHexString(hoveredColor ?? Colors.white)}\ncopied to clipboard!',
-                                        style: kStyle.copyWith(
-                                          color: Colors.white,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: hoveredColor,
+                              content: CopiedColorSnackbar(hoveredColor: hoveredColor),
                             ),
                           );
                           setState(() {});
@@ -401,13 +381,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             setState(() {});
                           },
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20.r),
+                            borderRadius: BorderRadius.circular(20),
                             child: Image.memory(imageData!),
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 20.h,
+                      const SizedBox(
+                        height: 20,
                       ),
                       Flexible(
                         child: DecoratedBox(
@@ -422,138 +402,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             ],
                           ),
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 13.0.w),
+                            padding: const EdgeInsets.symmetric(horizontal: 13),
                             child: ScrollConfiguration(
-                              behavior: ScrollConfiguration.of(context)
-                                  .copyWith(scrollbars: false),
+                              behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
                               child: CustomScrollView(
                                 controller: _scrollController,
                                 slivers: [
-                                  SliverAppBar(
-                                    toolbarHeight: 130.h,
-                                    primary: false,
-                                    pinned: pinnedDetailedColors,
-                                    actions: [
-                                      GestureDetector(
-                                        behavior: HitTestBehavior.opaque,
-                                        onTap: () {
-                                          setState(() {
-                                            pinnedDetailedColors =
-                                                !pinnedDetailedColors;
-                                            _controller.reverse();
-                                            kLog.wtf(
-                                              'Pinned $pinnedDetailedColors',
-                                            );
-                                          });
-                                        },
-                                        child: Padding(
-                                          padding:
-                                              EdgeInsets.only(right: 20.0.w),
-                                          child: Lottie.asset(
-                                            'assets/lock.json',
-                                            controller: _controller,
-                                            width: 50.w,
-                                            onLoaded: (composition) {
-                                              // Configure the AnimationController with the duration of the
-                                              // Lottie file and start the animation.
-                                              if (!pinnedDetailedColors) {
-                                                _controller
-                                                  ..duration =
-                                                      composition.duration
-                                                  ..forward();
-                                              } else {
-                                                _controller
-                                                  ..duration =
-                                                      composition.duration
-                                                  ..animateBack(0);
-                                              }
-                                            },
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                    backgroundColor: Colors.transparent,
-                                    elevation: 0,
-                                    flexibleSpace: Card(
-                                      color: Colors.white,
-                                      elevation: 5,
-                                      shadowColor: kColorBackground,
-                                      child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 12.h,
-                                        ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Column(
-                                              children: [
-                                                Text(
-                                                  'Dominant color',
-                                                  style: kStyle.copyWith(
-                                                    color: kColorBackground,
-                                                  ),
-                                                ),
-                                                if (paletteGenerator != null)
-                                                  if (paletteGenerator!
-                                                          .dominantColor !=
-                                                      null)
-                                                    CircleColor(
-                                                      color: paletteGenerator!
-                                                          .dominantColor!.color,
-                                                    ),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: 20.w,
-                                            ),
-                                            if (copiedColor != null)
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    'Copied color',
-                                                    style: kStyle.copyWith(
-                                                      color: kColorBackground,
-                                                    ),
-                                                  ),
-                                                  CircleColor(
-                                                    color: copiedColor!,
-                                                    cancelTap: true,
-                                                  )
-                                                ],
-                                              ),
-                                            SizedBox(
-                                              width: 20.w,
-                                            ),
-                                            if (hoveredColor != null &&
-                                                hovering)
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    'Hovered color',
-                                                    style: kStyle.copyWith(
-                                                      color: kColorBackground,
-                                                    ),
-                                                  ),
-                                                  CircleColor(
-                                                    color: hoveredColor!,
-                                                    cancelTap: true,
-                                                  )
-                                                ],
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                                   SliverToBoxAdapter(
                                     child: Card(
                                       shadowColor: kColorBackground,
                                       elevation: 5,
                                       child: Padding(
-                                        padding: EdgeInsets.all(14.0.r),
+                                        padding: const EdgeInsets.all(14),
                                         child: Wrap(
                                           children: [
                                             if (activeColors.isNotEmpty)
