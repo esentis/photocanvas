@@ -179,11 +179,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF3F1F5),
+      backgroundColor: Color(0xff4C0033),
       appBar: AppBar(
+        backgroundColor: Color(0xff790252),
         centerTitle: true,
         toolbarHeight: imageData != null ? 150 : 100,
-        shadowColor: kColorBackground,
+        shadowColor: Color(0xffE80F88),
         elevation: 5,
         actions: [
           if (imageData != null)
@@ -196,7 +197,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: const Text('Reset'),
             ),
         ],
-        backgroundColor: Colors.white,
         title: Stack(
           children: [
             if (imageData != null)
@@ -302,8 +302,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   }
                 },
                 child: Card(
-                  color: containerColor,
-                  shadowColor: containerText == 'Ready to drop' ? kColorSuccess : kColorBackground,
+                  color: containerText == 'Ready to drop' ? kColorSuccess : Color(0xffE80F88),
+                  shadowColor: Color(0xffF9F9F9),
                   elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
@@ -316,7 +316,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         containerText,
                         style: kStyle.copyWith(
                           fontSize: 50,
-                          color: containerText == 'Ready to drop' ? Colors.white : kColorBackground,
+                          color: Colors.white,
                         ),
                       ),
                     ),

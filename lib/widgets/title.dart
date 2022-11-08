@@ -20,7 +20,8 @@ class PhotocanvasTitle extends StatelessWidget {
           cursor: SystemMouseCursors.click,
           child: Card(
             elevation: 5,
-            shadowColor: kColorBackground,
+            color: Color(0xffE80F88),
+            shadowColor: Color(0xffF9F9F9),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
@@ -34,7 +35,7 @@ class PhotocanvasTitle extends StatelessWidget {
                   Text(
                     title,
                     style: kStyle.copyWith(
-                      color: kColorBackground,
+                      color: Color(0xffF9F9F9),
                       fontSize: 40,
                     ),
                   ),
@@ -42,7 +43,7 @@ class PhotocanvasTitle extends StatelessWidget {
                     '${Utils.version}',
                     style: kStyle.copyWith(
                       fontSize: 16,
-                      color: kColorBackground,
+                      color: Color(0xffF9F9F9),
                     ),
                   ),
                 ],
