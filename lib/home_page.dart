@@ -179,11 +179,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF3F1F5),
+      backgroundColor: const Color(0xff6C4AB6),
       appBar: AppBar(
+        backgroundColor: const Color(0xff8D9EFF),
         centerTitle: true,
         toolbarHeight: imageData != null ? 150 : 100,
-        shadowColor: kColorBackground,
+        shadowColor: const Color(0xff3C4048),
         elevation: 5,
         actions: [
           if (imageData != null)
@@ -193,10 +194,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   imageData = null;
                 });
               },
-              child: const Text('Reset'),
+              child: Text(
+                'Reset',
+                style: kStyle.copyWith(
+                  color: Colors.white,
+                ),
+              ),
             ),
         ],
-        backgroundColor: Colors.white,
         title: Stack(
           children: [
             if (imageData != null)
@@ -224,7 +229,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       Text(
                         'Dominant color',
                         style: kStyle.copyWith(
-                          color: kColorBackground,
+                          color: Colors.white,
                         ),
                       ),
                       if (paletteGenerator != null)
@@ -243,7 +248,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         Text(
                           'Copied color',
                           style: kStyle.copyWith(
-                            color: kColorBackground,
+                            color: Colors.white,
                           ),
                         ),
                         CircleColor(
@@ -261,7 +266,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         Text(
                           'Hovered color',
                           style: kStyle.copyWith(
-                            color: kColorBackground,
+                            color: Colors.white,
                           ),
                         ),
                         CircleColor(
@@ -302,11 +307,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   }
                 },
                 child: Card(
-                  color: containerColor,
-                  shadowColor: containerText == 'Ready to drop' ? kColorSuccess : kColorBackground,
+                  color: containerText == 'Ready to drop' ? const Color(0xffB9E0FF) : const Color(0xff8D9EFF),
+                  shadowColor: const Color(0xff3C4048),
                   elevation: 5,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: SizedBox(
                     width: 600,
@@ -316,7 +321,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         containerText,
                         style: kStyle.copyWith(
                           fontSize: 50,
-                          color: containerText == 'Ready to drop' ? Colors.white : kColorBackground,
+                          color: containerText == 'Ready to drop' ? const Color(0xff6C4AB6) : Colors.white,
                         ),
                       ),
                     ),
@@ -392,11 +397,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       Flexible(
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: const Color(0xff6C4AB6),
                             boxShadow: [
                               BoxShadow(
                                 blurRadius: 2,
-                                color: kColorBackground.withOpacity(0.2),
+                                color: const Color(0xff3C4048).withOpacity(0.2),
                                 spreadRadius: 2,
                               ),
                             ],
@@ -405,34 +410,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             padding: const EdgeInsets.symmetric(horizontal: 13),
                             child: ScrollConfiguration(
                               behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                              child: CustomScrollView(
+                              child: RawScrollbar(
                                 controller: _scrollController,
-                                slivers: [
-                                  SliverToBoxAdapter(
-                                    child: Card(
-                                      shadowColor: kColorBackground,
-                                      elevation: 5,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(14),
-                                        child: Wrap(
-                                          children: [
-                                            if (activeColors.isNotEmpty)
-                                              ...activeColors.map(
-                                                (c) => CircleColor(
-                                                  color: c,
-                                                  onTap: () {
-                                                    setState(() {
-                                                      copiedColor = c;
-                                                    });
-                                                  },
-                                                ),
-                                              )
-                                          ],
+                                thumbVisibility: true,
+                                thumbColor: const Color(0xff432C7A),
+                                thickness: 15,
+                                radius: const Radius.circular(12),
+                                child: CustomScrollView(
+                                  controller: _scrollController,
+                                  slivers: [
+                                    SliverToBoxAdapter(
+                                      child: Card(
+                                        shadowColor: const Color(0xff3C4048),
+                                        color: const Color(0xff8D9EFF),
+                                        elevation: 5,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(14),
+                                          child: Wrap(
+                                            children: [
+                                              if (activeColors.isNotEmpty)
+                                                ...activeColors.map(
+                                                  (c) => CircleColor(
+                                                    color: c,
+                                                    onTap: () {
+                                                      setState(() {
+                                                        copiedColor = c;
+                                                      });
+                                                    },
+                                                  ),
+                                                )
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
