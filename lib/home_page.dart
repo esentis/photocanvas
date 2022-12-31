@@ -71,7 +71,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           //  width: 400,
           height: 310,
         );
-        imageData = img.encodeJpg(resized) as Uint8List;
+        imageData = img.encodeJpg(resized);
       }
       setState(() {});
       Navigator.pop(context);
@@ -307,7 +307,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   }
                 },
                 child: Card(
-                  color: containerText == 'Ready to drop' ? const Color(0xffB9E0FF) : const Color(0xff8D9EFF),
+                  color: containerText == 'Ready to drop'
+                      ? const Color(0xffB9E0FF)
+                      : const Color(0xff8D9EFF),
                   shadowColor: const Color(0xff3C4048),
                   elevation: 5,
                   shape: RoundedRectangleBorder(
@@ -321,7 +323,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         containerText,
                         style: kStyle.copyWith(
                           fontSize: 50,
-                          color: containerText == 'Ready to drop' ? const Color(0xff6C4AB6) : Colors.white,
+                          color: containerText == 'Ready to drop'
+                              ? const Color(0xff6C4AB6)
+                              : Colors.white,
                         ),
                       ),
                     ),
@@ -367,7 +371,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               backgroundColor: hoveredColor,
-                              content: CopiedColorSnackbar(hoveredColor: hoveredColor),
+                              content: CopiedColorSnackbar(
+                                  hoveredColor: hoveredColor),
                             ),
                           );
                           setState(() {});
@@ -409,7 +414,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 13),
                             child: ScrollConfiguration(
-                              behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                              behavior: ScrollConfiguration.of(context)
+                                  .copyWith(scrollbars: false),
                               child: RawScrollbar(
                                 controller: _scrollController,
                                 thumbVisibility: true,
@@ -425,7 +431,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         color: const Color(0xff8D9EFF),
                                         elevation: 5,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                         ),
                                         child: Padding(
                                           padding: const EdgeInsets.all(14),
