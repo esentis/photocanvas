@@ -1,4 +1,12 @@
-# 1.1.0
+# 1.2.1
+
+- Updates image dependency
+
+## 1.2.0
+
+- Changes the UI colors
+
+## 1.1.0
 
 - Redesigns the UI
 - Fixes loading dialog style issues
