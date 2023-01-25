@@ -372,7 +372,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             SnackBar(
                               backgroundColor: hoveredColor,
                               content: CopiedColorSnackbar(
-                                  hoveredColor: hoveredColor),
+                                hoveredColor: hoveredColor,
+                              ),
                             ),
                           );
                           setState(() {});
