@@ -1,6 +1,7 @@
 # 1.2.1
 
 - Updates image dependency
+- Adds field for hex color check
 
 ## 1.2.0
 
