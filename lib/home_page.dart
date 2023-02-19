@@ -11,6 +11,7 @@ import 'package:image/image.dart' as img;
 import 'package:image_pixels/image_pixels.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
+import 'package:photocanvas/widgets/check_color.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
 import 'package:photocanvas/widgets/copied_color_snackbar.dart';
 import 'package:photocanvas/widgets/title.dart';
@@ -287,6 +288,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             const SizedBox(
               height: 20,
             ),
+            if (imageData == null) const CheckColor(),
             if (imageData == null)
               DropZone(
                 onDragEnter: () {
