@@ -11,14 +11,18 @@ class CircleColor extends StatefulWidget {
     this.height,
     this.width,
     this.cancelTap = false,
+    this.showText = true,
+    this.textColor,
     Key? key,
   }) : super(key: key);
 
   final Color color;
+  final Color? textColor;
   final double? width;
   final double? height;
   final VoidCallback? onTap;
   final bool cancelTap;
+  final bool showText;
   @override
   CircleColorState createState() => CircleColorState();
 }
@@ -55,7 +59,7 @@ class CircleColorState extends State<CircleColor> {
                             child: Text(
                               '${kColorToHexString(widget.color)}\ncopied to clipboard!',
                               style: kStyle.copyWith(
-                                color: Colors.white,
+                                color: widget.textColor ?? Colors.white,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -71,15 +75,16 @@ class CircleColorState extends State<CircleColor> {
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              Text(
-                kColorToHexString(
-                  widget.color,
+              if (widget.showText)
+                Text(
+                  kColorToHexString(
+                    widget.color,
+                  ),
+                  style: kStyle.copyWith(
+                    fontSize: 25,
+                    color: Colors.white,
+                  ),
                 ),
-                style: kStyle.copyWith(
-                  fontSize: 25,
-                  color: Colors.white,
-                ),
-              ),
               Container(
                 height: widget.height ?? 50,
                 width: widget.width ?? 50,
