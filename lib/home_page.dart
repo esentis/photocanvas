@@ -17,7 +17,10 @@ import 'package:photocanvas/widgets/copied_color_snackbar.dart';
 import 'package:photocanvas/widgets/title.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
+  const HomePage({
+    required this.title,
+    Key? key,
+  }) : super(key: key);
   final String title;
   @override
   State<HomePage> createState() => _HomePageState();

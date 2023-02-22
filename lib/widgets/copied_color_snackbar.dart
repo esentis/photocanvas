@@ -5,8 +5,8 @@ import 'package:photocanvas/constants.dart';
 
 class CopiedColorSnackbar extends StatelessWidget {
   const CopiedColorSnackbar({
-    Key? key,
     required this.hoveredColor,
+    Key? key,
   }) : super(key: key);
 
   final Color? hoveredColor;
