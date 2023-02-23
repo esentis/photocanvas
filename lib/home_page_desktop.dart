@@ -1,4 +1,3 @@
-
 // ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable
 
 import 'dart:html' as html;
@@ -47,8 +46,6 @@ class _HomePageDesktopState extends State<HomePageDesktop>
   Color? hoveredColor;
 
   Color? copiedColor;
-
-  final ScrollController _scrollController = ScrollController();
 
   late final AnimationController _controller;
 
