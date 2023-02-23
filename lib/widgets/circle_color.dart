@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photocanvas/constants.dart';
@@ -42,33 +40,8 @@ class CircleColorState extends State<CircleColor> {
                 Clipboard.setData(
                   ClipboardData(text: kColorToHexString(widget.color)),
                 );
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: widget.color,
-                    content: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(
-                          sigmaX: 7,
-                          sigmaY: 7,
-                        ),
-                        child: Container(
-                          height: 80,
-                          color: widget.color.withOpacity(0.8),
-                          child: Center(
-                            child: Text(
-                              '${kColorToHexString(widget.color)}\ncopied to clipboard!',
-                              style: kStyle.copyWith(
-                                color: widget.textColor ?? Colors.white,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
+
+                kShowCopySnackBar(context, widget.color);
                 widget.onTap?.call();
               },
         child: Padding(
