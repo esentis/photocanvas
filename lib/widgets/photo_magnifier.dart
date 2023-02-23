@@ -13,8 +13,8 @@ class PhotoMagnifier extends StatelessWidget {
       decoration: const MagnifierDecoration(
         shape: CircleBorder(
           side: BorderSide(
-            color: Colors.pink,
-            width: 3,
+            color: Color(0xff8D9EFF),
+            width: 4,
           ),
         ),
       ),
