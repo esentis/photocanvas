@@ -1,4 +1,8 @@
-# 1.2.1
+## 1.2.2
+
+- Adds magnifying effect when analyzing image
+
+## 1.2.1
 
 - Updates image dependency
 - Adds field for hex color check
