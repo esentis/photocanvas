@@ -7,13 +7,13 @@ import 'package:drop_zone/drop_zone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_pixels/image_pixels.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/check_color.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
-import 'package:photocanvas/widgets/copied_color_snackbar.dart';
 import 'package:photocanvas/widgets/photo_magnifier.dart';
 import 'package:photocanvas/widgets/title.dart';
 
@@ -196,6 +196,48 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         elevation: 5,
         actions: [
           if (imageData != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 25),
+              child: GestureDetector(
+                onTap: () {
+                  showDialog<void>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text("Image's color palette"),
+                        content: SingleChildScrollView(
+                          child: Wrap(
+                            children: [
+                              if (activeColors.isNotEmpty)
+                                ...activeColors.map(
+                                  (c) => CircleColor(
+                                    color: c,
+                                    onTap: () {
+                                      setState(() {
+                                        copiedColor = c;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: SvgPicture.asset(
+                    'assets/palette.svg',
+                    height: 50,
+                    width: 50,
+                  ),
+                ),
+              ),
+            ),
+          if (imageData != null)
             TextButton(
               onPressed: () {
                 setState(() {
@@ -210,294 +252,211 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
             ),
         ],
-        title: Stack(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (imageData != null)
-              ImagePixels(
-                imageProvider: Image.memory(
-                  imageData!,
-                ).image,
-                builder: (_, img) {
-                  hoveredColor = img.pixelColorAt!(
-                    dx ?? 0,
-                    dy ?? 0,
-                  );
-                  return const SizedBox();
-                },
-              ),
-            if (imageData == null)
-              PhotocanvasTitle(title: widget.title)
-            else
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        'Dominant color',
-                        style: kStyle.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                      if (paletteGenerator != null)
-                        if (paletteGenerator!.dominantColor != null)
-                          CircleColor(
-                            color: paletteGenerator!.dominantColor!.color,
-                          ),
-                    ],
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  if (copiedColor != null)
-                    Column(
-                      children: [
-                        Text(
-                          'Copied color',
-                          style: kStyle.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                        CircleColor(
-                          color: copiedColor!,
-                          cancelTap: true,
-                        )
-                      ],
-                    ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  if (hoveredColor != null && hovering)
-                    Column(
-                      children: [
-                        Text(
-                          'Hovered color',
-                          style: kStyle.copyWith(
-                            color: Colors.white,
-                          ),
-                        ),
-                        CircleColor(
-                          color: hoveredColor!,
-                          cancelTap: true,
-                        )
-                      ],
-                    ),
-                ],
-              ),
+            PhotocanvasTitle(title: widget.title),
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SizedBox(
-              height: 20,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const SizedBox(),
+          if (imageData == null) const CheckColor(),
+          if (imageData == null)
+            DropZone(
+              onDragEnter: () {
+                setState(() {
+                  containerColor = kColorSuccess;
+                  containerText = 'Ready to drop';
+                });
+              },
+              onDragExit: () {
+                setState(() {
+                  containerColor = Colors.white;
+                  containerText = 'Drop your image here';
+                });
+              },
+              onDrop: (List<html.File>? files) async {
+                if (files != null) {
+                  await onDrop(files);
+                }
+              },
+              child: Card(
+                color: containerText == 'Ready to drop'
+                    ? const Color(0xffB9E0FF)
+                    : const Color(0xff8D9EFF),
+                shadowColor: const Color(0xff3C4048),
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: SizedBox(
+                  width: 600,
+                  height: 500,
+                  child: Center(
+                    child: Text(
+                      containerText,
+                      style: kStyle.copyWith(
+                        fontSize: 50,
+                        color: containerText == 'Ready to drop'
+                            ? const Color(0xff6C4AB6)
+                            : Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
-            if (imageData == null) const CheckColor(),
-            if (imageData == null)
-              DropZone(
+          if (imageData != null)
+            Stack(
+              children: [
+                ImagePixels(
+                  imageProvider: Image.memory(
+                    imageData!,
+                  ).image,
+                  builder: (_, img) {
+                    hoveredColor = img.pixelColorAt!(
+                      dx ?? 0,
+                      dy ?? 0,
+                    );
+                    return const SizedBox();
+                  },
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          'Dominant color',
+                          style: kStyle.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                        if (paletteGenerator != null)
+                          if (paletteGenerator!.dominantColor != null)
+                            CircleColor(
+                              color: paletteGenerator!.dominantColor!.color,
+                            ),
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    if (copiedColor != null)
+                      Column(
+                        children: [
+                          Text(
+                            'Copied color',
+                            style: kStyle.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                          CircleColor(
+                            color: copiedColor!,
+                            cancelTap: true,
+                          )
+                        ],
+                      ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    if (hoveredColor != null && hovering)
+                      Column(
+                        children: [
+                          Text(
+                            'Hovered color',
+                            style: kStyle.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                          CircleColor(
+                            color: hoveredColor!,
+                            cancelTap: true,
+                          )
+                        ],
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          // Image preview container
+          if (imageData != null)
+            Center(
+              child: DropZone(
                 onDragEnter: () {
-                  setState(() {
-                    containerColor = kColorSuccess;
-                    containerText = 'Ready to drop';
-                  });
+                  kLog.i('Entering image');
                 },
                 onDragExit: () {
-                  setState(() {
-                    containerColor = Colors.white;
-                    containerText = 'Drop your image here';
-                  });
+                  kLog.i('Exiting image');
                 },
-                onDrop: (List<html.File>? files) async {
+                onDrop: (files) async {
                   if (files != null) {
                     await onDrop(files);
                   }
                 },
-                child: Card(
-                  color: containerText == 'Ready to drop'
-                      ? const Color(0xffB9E0FF)
-                      : const Color(0xff8D9EFF),
-                  shadowColor: const Color(0xff3C4048),
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: SizedBox(
-                    width: 600,
-                    height: 500,
-                    child: Center(
-                      child: Text(
-                        containerText,
-                        style: kStyle.copyWith(
-                          fontSize: 50,
-                          color: containerText == 'Ready to drop'
-                              ? const Color(0xff6C4AB6)
-                              : Colors.white,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Listener(
+                      onPointerHover: (pointer) {
+                        setState(() {
+                          localDx = pointer.localPosition.dx;
+                          localDy = pointer.localPosition.dy;
+                          dx = pointer.localPosition.dx.toInt();
+                          dy = pointer.localPosition.dy.toInt();
+                        });
+                      },
+                      onPointerDown: (pointer) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        Clipboard.setData(
+                          ClipboardData(
+                            text: kColorToHexString(
+                              hoveredColor ?? Colors.white,
+                            ),
+                          ),
+                        );
+                        copiedColor = hoveredColor;
+                        if (copiedColor != null) {
+                          kShowCopySnackBar(context, copiedColor!);
+                        }
+                        setState(() {});
+                      },
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.precise,
+                        onExit: (e) {
+                          hovering = false;
+                          hoveredColor = null;
+
+                          setState(() {});
+                        },
+                        onEnter: (e) {
+                          hovering = true;
+
+                          setState(() {});
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.memory(imageData!),
                         ),
                       ),
                     ),
-                  ),
+                    if (hoveredColor != null && hovering)
+                      Positioned(
+                        left: localDx,
+                        top: localDy,
+                        child: const PhotoMagnifier(),
+                      ),
+                  ],
                 ),
               ),
-
-            // Image preview container
-            if (imageData != null)
-              Expanded(
-                child: DropZone(
-                  onDragEnter: () {
-                    kLog.i('Entering image');
-                  },
-                  onDragExit: () {
-                    kLog.i('Exiting image');
-                  },
-                  onDrop: (files) async {
-                    if (files != null) {
-                      await onDrop(files);
-                    }
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Listener(
-                            onPointerHover: (pointer) {
-                              setState(() {
-                                localDx = pointer.localPosition.dx;
-                                localDy = pointer.localPosition.dy;
-                                dx = pointer.localPosition.dx.toInt();
-                                dy = pointer.localPosition.dy.toInt();
-                              });
-                            },
-                            onPointerDown: (pointer) {
-                              ScaffoldMessenger.of(context).clearSnackBars();
-                              Clipboard.setData(
-                                ClipboardData(
-                                  text: kColorToHexString(
-                                    hoveredColor ?? Colors.white,
-                                  ),
-                                ),
-                              );
-                              copiedColor = hoveredColor;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: hoveredColor,
-                                  content: CopiedColorSnackbar(
-                                    hoveredColor: hoveredColor,
-                                  ),
-                                ),
-                              );
-                              setState(() {});
-                            },
-                            child: MouseRegion(
-                              cursor: SystemMouseCursors.precise,
-                              onExit: (e) {
-                                hovering = false;
-                                hoveredColor = null;
-                                kLog.wtf('Exitting image');
-                                setState(() {});
-                              },
-                              onHover: (event) {
-                                kLog.wtf(event.localPosition.dx);
-                                kLog.wtf(event.localPosition.dy);
-                              },
-                              onEnter: (e) {
-                                hovering = true;
-                                kLog.wtf('Hovering image');
-                                setState(() {});
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
-                                child: Image.memory(imageData!),
-                              ),
-                            ),
-                          ),
-                          if (hoveredColor != null && hovering)
-                            Positioned(
-                              left: localDx,
-                              top: localDy,
-                              child: const PhotoMagnifier(),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 150,
-                      ),
-                      Flexible(
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: const Color(0xff6C4AB6),
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: 2,
-                                color: const Color(0xff3C4048).withOpacity(0.2),
-                                spreadRadius: 2,
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 13),
-                            child: ScrollConfiguration(
-                              behavior: ScrollConfiguration.of(context)
-                                  .copyWith(scrollbars: false),
-                              child: RawScrollbar(
-                                controller: _scrollController,
-                                thumbVisibility: true,
-                                thumbColor: const Color(0xff432C7A),
-                                thickness: 15,
-                                radius: const Radius.circular(12),
-                                child: CustomScrollView(
-                                  controller: _scrollController,
-                                  slivers: [
-                                    SliverToBoxAdapter(
-                                      child: Card(
-                                        shadowColor: const Color(0xff3C4048),
-                                        color: const Color(0xff8D9EFF),
-                                        elevation: 5,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(14),
-                                          child: Wrap(
-                                            children: [
-                                              if (activeColors.isNotEmpty)
-                                                ...activeColors.map(
-                                                  (c) => CircleColor(
-                                                    color: c,
-                                                    onTap: () {
-                                                      setState(() {
-                                                        copiedColor = c;
-                                                      });
-                                                    },
-                                                  ),
-                                                )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            // To properly align dop your image container
-            if (imageData == null) const SizedBox(),
-            // FOOTER
-            // const CopyrightFooter()
-          ],
-        ),
+            ),
+          const SizedBox()
+        ],
       ),
     );
   }

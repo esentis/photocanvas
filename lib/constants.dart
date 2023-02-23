@@ -1,5 +1,7 @@
 // ignore_for_file: only_throw_errors
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -50,4 +52,36 @@ Future<void> launchLink(String url) async {
   } else {
     throw 'Could not launch $url';
   }
+}
+
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> kShowCopySnackBar(
+  BuildContext context,
+  Color color,
+) {
+  return ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: color,
+      content: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 7,
+            sigmaY: 7,
+          ),
+          child: ColoredBox(
+            color: color.withOpacity(0.8),
+            child: Center(
+              child: Text(
+                '${kColorToHexString(color)}\ncopied to clipboard!',
+                style: kStyle.copyWith(
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }

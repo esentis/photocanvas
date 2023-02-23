@@ -1,3 +1,9 @@
+## 1.2.3
+
+- Revamped magnifying glass design for enhanced user experience.
+- Added the ability to toggle the color palette by tapping on the palette icon when an image is loaded, removing clutter from below the image.
+- Addressed layout inconsistencies to ensure a more consistent and polished look throughout the app.
+
 ## 1.2.2
 
 - Adds magnifying effect when analyzing image
