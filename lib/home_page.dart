@@ -14,10 +14,14 @@ import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/check_color.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
 import 'package:photocanvas/widgets/copied_color_snackbar.dart';
+import 'package:photocanvas/widgets/photo_magnifier.dart';
 import 'package:photocanvas/widgets/title.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
+  const HomePage({
+    required this.title,
+    Key? key,
+  }) : super(key: key);
   final String title;
   @override
   State<HomePage> createState() => _HomePageState();
@@ -45,6 +49,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
 
   late final AnimationController _controller;
+
+  double? localDx;
+  double? localDy;
 
   bool isValidImage(String fileName) {
     return fileName.toLowerCase().endsWith('jpg') ||
@@ -353,54 +360,71 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Listener(
-                        onPointerHover: (pointer) {
-                          setState(() {
-                            dx = pointer.localPosition.dx.toInt();
-                            dy = pointer.localPosition.dy.toInt();
-                          });
-                        },
-                        onPointerDown: (pointer) {
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          Clipboard.setData(
-                            ClipboardData(
-                              text: kColorToHexString(
-                                hoveredColor ?? Colors.white,
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Listener(
+                            onPointerHover: (pointer) {
+                              setState(() {
+                                localDx = pointer.localPosition.dx;
+                                localDy = pointer.localPosition.dy;
+                                dx = pointer.localPosition.dx.toInt();
+                                dy = pointer.localPosition.dy.toInt();
+                              });
+                            },
+                            onPointerDown: (pointer) {
+                              ScaffoldMessenger.of(context).clearSnackBars();
+                              Clipboard.setData(
+                                ClipboardData(
+                                  text: kColorToHexString(
+                                    hoveredColor ?? Colors.white,
+                                  ),
+                                ),
+                              );
+                              copiedColor = hoveredColor;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: hoveredColor,
+                                  content: CopiedColorSnackbar(
+                                    hoveredColor: hoveredColor,
+                                  ),
+                                ),
+                              );
+                              setState(() {});
+                            },
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.precise,
+                              onExit: (e) {
+                                hovering = false;
+                                hoveredColor = null;
+                                kLog.wtf('Exitting image');
+                                setState(() {});
+                              },
+                              onHover: (event) {
+                                kLog.wtf(event.localPosition.dx);
+                                kLog.wtf(event.localPosition.dy);
+                              },
+                              onEnter: (e) {
+                                hovering = true;
+                                kLog.wtf('Hovering image');
+                                setState(() {});
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.memory(imageData!),
                               ),
                             ),
-                          );
-                          copiedColor = hoveredColor;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              backgroundColor: hoveredColor,
-                              content: CopiedColorSnackbar(
-                                hoveredColor: hoveredColor,
-                              ),
-                            ),
-                          );
-                          setState(() {});
-                        },
-                        child: MouseRegion(
-                          cursor: SystemMouseCursors.precise,
-                          onExit: (e) {
-                            hovering = false;
-                            hoveredColor = null;
-                            kLog.wtf('Exitting image');
-                            setState(() {});
-                          },
-                          onEnter: (e) {
-                            hovering = true;
-                            kLog.wtf('Hovering image');
-                            setState(() {});
-                          },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Image.memory(imageData!),
                           ),
-                        ),
+                          if (hoveredColor != null && hovering)
+                            Positioned(
+                              left: localDx,
+                              top: localDy,
+                              child: const PhotoMagnifier(),
+                            ),
+                        ],
                       ),
                       const SizedBox(
-                        height: 20,
+                        height: 150,
                       ),
                       Flexible(
                         child: DecoratedBox(
