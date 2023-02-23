@@ -27,12 +27,15 @@ class _CheckColorState extends State<CheckColor> {
             width: 80,
           )
         else
-          Container(
-            height: 80,
-            width: 80,
-            decoration: const BoxDecoration(
-              color: Colors.transparent,
-              shape: BoxShape.circle,
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Container(
+              height: 80,
+              width: 80,
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
+                shape: BoxShape.circle,
+              ),
             ),
           ),
         Padding(

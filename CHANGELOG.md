@@ -1,3 +1,8 @@
+## 1.3.0
+
+- Adds coming soon messages for mobile & tablet users
+- Fixes minor layout issues
+
 ## 1.2.3
 
 - Revamped magnifying glass design for enhanced user experience.

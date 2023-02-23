@@ -1,3 +1,4 @@
+
 // ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable
 
 import 'dart:html' as html;
@@ -17,17 +18,18 @@ import 'package:photocanvas/widgets/circle_color.dart';
 import 'package:photocanvas/widgets/photo_magnifier.dart';
 import 'package:photocanvas/widgets/title.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({
+class HomePageDesktop extends StatefulWidget {
+  const HomePageDesktop({
     required this.title,
     Key? key,
   }) : super(key: key);
   final String title;
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePageDesktop> createState() => _HomePageDesktopState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _HomePageDesktopState extends State<HomePageDesktop>
+    with TickerProviderStateMixin {
   Color containerColor = Colors.white;
   String containerText = 'Drop your image here';
   String focusedColorHex = '';

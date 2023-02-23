@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:photocanvas/coming_soon.dart';
 import 'package:photocanvas/helper/utils.dart';
-import 'package:photocanvas/home_page.dart';
+import 'package:photocanvas/home_page_desktop.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
@@ -27,7 +29,14 @@ class MyApp extends StatelessWidget {
           PointerDeviceKind.mouse,
         },
       ),
-      home: const HomePage(title: 'Photocanvas'),
+      home: ScreenTypeLayout.builder(
+        mobile: (BuildContext context) => const ComingSoon(),
+        tablet: (BuildContext context) => const ComingSoon(),
+        desktop: (BuildContext context) =>
+            const HomePageDesktop(title: 'Photocanvas'),
+        watch: (BuildContext context) => const ComingSoon(),
+      ),
+      // home: const HomePage(title: 'Photocanvas'),
     );
   }
 }
