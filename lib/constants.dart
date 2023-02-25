@@ -11,17 +11,22 @@ Logger kLog = Logger();
 ///```dart
 ///Color(0xff1F1D36);
 ///```
-Color kColorBackground = const Color(0xff1F1D36);
+Color kColorAppBar = const Color(0xff6C4AB6);
+
+/// ```dart
+/// Color(0xff3C4048);
+/// ```
+Color kColorBackground = const Color(0xff8D9EFF);
 
 ///```dart
-///Color(0xffEEEBDD).withOpacity(0.2);
+/// Colors.black;
 ///```
-Color kColorInnerShadow = const Color(0xffEEEBDD).withOpacity(0.2);
+Color kColorText = Colors.black;
 
-///```dart
-///Color(0xff864879);
-///```
-Color kColorMain = const Color(0xff864879);
+/// ```dart
+/// Color(0xffB9E0FF);
+/// ```
+Color kColorTextFieldBorder = const Color(0xffB9E0FF);
 
 ///```dart
 ///Color(0xff66DE93);

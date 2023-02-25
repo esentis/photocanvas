@@ -45,12 +45,15 @@ class _CheckColorState extends State<CheckColor> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Check color hex',
-                  style: kStyle.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: Text(
+                    'Check color hex',
+                    style: kStyle.copyWith(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: kColorText,
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -58,7 +61,7 @@ class _CheckColorState extends State<CheckColor> {
                   width: 150,
                   child: TextField(
                     cursorRadius: const Radius.circular(12),
-                    cursorColor: const Color(0xff6C4AB6),
+                    cursorColor: kColorTextFieldBorder,
                     scrollPadding: EdgeInsets.zero,
                     cursorWidth: 5,
                     cursorHeight: 30,
@@ -68,19 +71,26 @@ class _CheckColorState extends State<CheckColor> {
                     style: kStyle.copyWith(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: kColorTextFieldBorder,
                       height: 1,
                     ),
                     decoration: InputDecoration(
                       counterText: '',
                       contentPadding: EdgeInsets.zero,
-                      fillColor: Colors.white,
+                      fillColor: kColorAppBar,
                       filled: true,
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(
-                          color: Color(0xffB9E0FF),
+                        borderSide: BorderSide(
+                          color: kColorTextFieldBorder,
                           width: 5,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: kColorTextFieldBorder,
+                          width: 2,
                         ),
                       ),
                       border: OutlineInputBorder(

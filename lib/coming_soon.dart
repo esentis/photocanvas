@@ -13,12 +13,12 @@ class ComingSoon extends StatelessWidget {
     final random = Random().nextInt(comingSoonMessages.length);
     kLog.wtf(random);
     return Scaffold(
-      backgroundColor: const Color(0xff6C4AB6),
+      backgroundColor: kColorBackground,
       appBar: AppBar(
-        backgroundColor: const Color(0xff8D9EFF),
+        backgroundColor: kColorBackground,
         centerTitle: true,
         toolbarHeight: 100,
-        shadowColor: const Color(0xff3C4048),
+        shadowColor: kColorBackground,
         elevation: 5,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -51,9 +51,9 @@ class ComingSoon extends StatelessWidget {
                 comingSoonMessages[random],
                 textAlign: TextAlign.center,
                 style: kStyle.copyWith(
-                  fontSize: 30,
+                  fontSize: 33,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: kColorText,
                 ),
               ),
             ),
