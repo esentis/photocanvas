@@ -1,3 +1,7 @@
+## 1.3.1
+
+- Updates and refines app's color scheme
+
 ## 1.3.0
 
 - Adds coming soon messages for mobile & tablet users
