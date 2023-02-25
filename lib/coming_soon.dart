@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:photocanvas/constants.dart';
+import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/widgets/title.dart';
 
 class ComingSoon extends StatelessWidget {
@@ -35,7 +36,7 @@ class ComingSoon extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
               child: SvgPicture.asset(
-                'assets/unavailable.svg',
+                Assets.unavailable,
                 height: 50,
                 colorFilter: const ColorFilter.mode(
                   Colors.red,
@@ -62,7 +63,7 @@ class ComingSoon extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
               child: SvgPicture.asset(
-                'assets/unavailable.svg',
+                Assets.unavailable,
                 height: 50,
                 colorFilter: const ColorFilter.mode(
                   Colors.red,

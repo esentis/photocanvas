@@ -12,6 +12,7 @@ import 'package:image/image.dart' as img;
 import 'package:image_pixels/image_pixels.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
+import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/widgets/check_color.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
 import 'package:photocanvas/widgets/photo_magnifier.dart';
@@ -195,58 +196,64 @@ class _HomePageDesktopState extends State<HomePageDesktop>
         elevation: 0,
         actions: [
           if (imageData != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 25),
-              child: GestureDetector(
-                onTap: () {
-                  showDialog<void>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text("Image's color palette"),
-                        content: SingleChildScrollView(
-                          child: Wrap(
-                            children: [
-                              if (activeColors.isNotEmpty)
-                                ...activeColors.map(
-                                  (c) => CircleColor(
-                                    color: c,
-                                    onTap: () {
-                                      setState(() {
-                                        copiedColor = c;
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                )
-                            ],
-                          ),
+            GestureDetector(
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Image's color palette"),
+                      content: SingleChildScrollView(
+                        child: Wrap(
+                          children: [
+                            if (activeColors.isNotEmpty)
+                              ...activeColors.map(
+                                (c) => CircleColor(
+                                  color: c,
+                                  onTap: () {
+                                    setState(() {
+                                      copiedColor = c;
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              )
+                          ],
                         ),
-                      );
-                    },
-                  );
-                },
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: SvgPicture.asset(
-                    'assets/palette.svg',
-                    height: 50,
-                    width: 50,
-                  ),
+                      ),
+                    );
+                  },
+                );
+              },
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: SvgPicture.asset(
+                  Assets.palette,
+                  height: 40,
+                  width: 40,
                 ),
               ),
             ),
           if (imageData != null)
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  imageData = null;
-                });
-              },
-              child: Text(
-                'Reset',
-                style: kStyle.copyWith(
-                  color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 5),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    imageData = null;
+                  });
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: SvgPicture.asset(
+                    Assets.reset,
+                    height: 40,
+                    width: 40,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.red,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -337,7 +344,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
                           Text(
                             'Dominant color',
                             style: kStyle.copyWith(
-                              color: Colors.white,
+                              color: kColorText,
                             ),
                           ),
                           if (paletteGenerator != null)
@@ -356,7 +363,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
                             Text(
                               'Copied color',
                               style: kStyle.copyWith(
-                                color: Colors.white,
+                                color: kColorText,
                               ),
                             ),
                             CircleColor(
@@ -374,7 +381,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
                             Text(
                               'Hovered color',
                               style: kStyle.copyWith(
-                                color: Colors.white,
+                                color: kColorText,
                               ),
                             ),
                             CircleColor(

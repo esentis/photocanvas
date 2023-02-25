@@ -55,7 +55,7 @@ class CircleColorState extends State<CircleColor> {
                   ),
                   style: kStyle.copyWith(
                     fontSize: 25,
-                    color: Colors.white,
+                    color: kColorText,
                   ),
                 ),
               Container(
