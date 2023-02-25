@@ -19,7 +19,7 @@ class PhotocanvasTitle extends StatelessWidget {
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
           child: Card(
-            elevation: 15,
+            elevation: 5,
             color: kColorBackground,
             shadowColor: kColorText,
             shape: RoundedRectangleBorder(
