@@ -20,7 +20,7 @@ class ComingSoon extends StatelessWidget {
         centerTitle: true,
         toolbarHeight: 100,
         shadowColor: kColorBackground,
-        elevation: 5,
+        elevation: 0,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
