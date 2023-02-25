@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:photocanvas/constants.dart';
+import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/widgets/title.dart';
 
 class ComingSoon extends StatelessWidget {
@@ -13,12 +14,12 @@ class ComingSoon extends StatelessWidget {
     final random = Random().nextInt(comingSoonMessages.length);
     kLog.wtf(random);
     return Scaffold(
-      backgroundColor: const Color(0xff6C4AB6),
+      backgroundColor: kColorBackground,
       appBar: AppBar(
-        backgroundColor: const Color(0xff8D9EFF),
+        backgroundColor: kColorBackground,
         centerTitle: true,
         toolbarHeight: 100,
-        shadowColor: const Color(0xff3C4048),
+        shadowColor: kColorBackground,
         elevation: 5,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -35,7 +36,7 @@ class ComingSoon extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
               child: SvgPicture.asset(
-                'assets/unavailable.svg',
+                Assets.unavailable,
                 height: 50,
                 colorFilter: const ColorFilter.mode(
                   Colors.red,
@@ -51,9 +52,9 @@ class ComingSoon extends StatelessWidget {
                 comingSoonMessages[random],
                 textAlign: TextAlign.center,
                 style: kStyle.copyWith(
-                  fontSize: 30,
+                  fontSize: 33,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: kColorText,
                 ),
               ),
             ),
@@ -62,7 +63,7 @@ class ComingSoon extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
               child: SvgPicture.asset(
-                'assets/unavailable.svg',
+                Assets.unavailable,
                 height: 50,
                 colorFilter: const ColorFilter.mode(
                   Colors.red,

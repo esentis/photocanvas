@@ -1,4 +1,3 @@
-
 // ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable
 
 import 'dart:html' as html;
@@ -13,6 +12,7 @@ import 'package:image/image.dart' as img;
 import 'package:image_pixels/image_pixels.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
+import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/widgets/check_color.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
 import 'package:photocanvas/widgets/photo_magnifier.dart';
@@ -47,8 +47,6 @@ class _HomePageDesktopState extends State<HomePageDesktop>
   Color? hoveredColor;
 
   Color? copiedColor;
-
-  final ScrollController _scrollController = ScrollController();
 
   late final AnimationController _controller;
 
@@ -189,67 +187,73 @@ class _HomePageDesktopState extends State<HomePageDesktop>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xff6C4AB6),
+      backgroundColor: kColorBackground,
       appBar: AppBar(
-        backgroundColor: const Color(0xff8D9EFF),
+        backgroundColor: kColorBackground,
         centerTitle: true,
-        toolbarHeight: imageData != null ? 150 : 100,
+        toolbarHeight: 100,
         shadowColor: const Color(0xff3C4048),
-        elevation: 5,
+        elevation: 0,
         actions: [
           if (imageData != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 25),
-              child: GestureDetector(
-                onTap: () {
-                  showDialog<void>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text("Image's color palette"),
-                        content: SingleChildScrollView(
-                          child: Wrap(
-                            children: [
-                              if (activeColors.isNotEmpty)
-                                ...activeColors.map(
-                                  (c) => CircleColor(
-                                    color: c,
-                                    onTap: () {
-                                      setState(() {
-                                        copiedColor = c;
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                )
-                            ],
-                          ),
+            GestureDetector(
+              onTap: () {
+                showDialog<void>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Image's color palette"),
+                      content: SingleChildScrollView(
+                        child: Wrap(
+                          children: [
+                            if (activeColors.isNotEmpty)
+                              ...activeColors.map(
+                                (c) => CircleColor(
+                                  color: c,
+                                  onTap: () {
+                                    setState(() {
+                                      copiedColor = c;
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              )
+                          ],
                         ),
-                      );
-                    },
-                  );
-                },
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: SvgPicture.asset(
-                    'assets/palette.svg',
-                    height: 50,
-                    width: 50,
-                  ),
+                      ),
+                    );
+                  },
+                );
+              },
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: SvgPicture.asset(
+                  Assets.palette,
+                  height: 40,
+                  width: 40,
                 ),
               ),
             ),
           if (imageData != null)
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  imageData = null;
-                });
-              },
-              child: Text(
-                'Reset',
-                style: kStyle.copyWith(
-                  color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.only(left: 15, right: 5),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    imageData = null;
+                  });
+                },
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: SvgPicture.asset(
+                    Assets.reset,
+                    height: 40,
+                    width: 40,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.red,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -265,7 +269,10 @@ class _HomePageDesktopState extends State<HomePageDesktop>
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(),
+          if (imageData == null)
+            const SizedBox(
+              height: 20,
+            ),
           if (imageData == null) const CheckColor(),
           if (imageData == null)
             DropZone(
@@ -288,10 +295,10 @@ class _HomePageDesktopState extends State<HomePageDesktop>
               },
               child: Card(
                 color: containerText == 'Ready to drop'
-                    ? const Color(0xffB9E0FF)
-                    : const Color(0xff8D9EFF),
-                shadowColor: const Color(0xff3C4048),
-                elevation: 5,
+                    ? kColorSuccess
+                    : kColorBackground,
+                shadowColor: kColorText,
+                elevation: 45,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -303,9 +310,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
                       containerText,
                       style: kStyle.copyWith(
                         fontSize: 50,
-                        color: containerText == 'Ready to drop'
-                            ? const Color(0xff6C4AB6)
-                            : Colors.white,
+                        color: kColorText,
                       ),
                     ),
                   ),
@@ -313,78 +318,82 @@ class _HomePageDesktopState extends State<HomePageDesktop>
               ),
             ),
           if (imageData != null)
-            Stack(
-              children: [
-                ImagePixels(
-                  imageProvider: Image.memory(
-                    imageData!,
-                  ).image,
-                  builder: (_, img) {
-                    hoveredColor = img.pixelColorAt!(
-                      dx ?? 0,
-                      dy ?? 0,
-                    );
-                    return const SizedBox();
-                  },
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          'Dominant color',
-                          style: kStyle.copyWith(
-                            color: Colors.white,
+            // Hovered color, dominant color, copied color
+            Padding(
+              padding: const EdgeInsets.only(top: 50),
+              child: Stack(
+                children: [
+                  ImagePixels(
+                    imageProvider: Image.memory(
+                      imageData!,
+                    ).image,
+                    builder: (_, img) {
+                      hoveredColor = img.pixelColorAt!(
+                        dx ?? 0,
+                        dy ?? 0,
+                      );
+                      return const SizedBox();
+                    },
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            'Dominant color',
+                            style: kStyle.copyWith(
+                              color: kColorText,
+                            ),
                           ),
-                        ),
-                        if (paletteGenerator != null)
-                          if (paletteGenerator!.dominantColor != null)
+                          if (paletteGenerator != null)
+                            if (paletteGenerator!.dominantColor != null)
+                              CircleColor(
+                                color: paletteGenerator!.dominantColor!.color,
+                              ),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      if (copiedColor != null)
+                        Column(
+                          children: [
+                            Text(
+                              'Copied color',
+                              style: kStyle.copyWith(
+                                color: kColorText,
+                              ),
+                            ),
                             CircleColor(
-                              color: paletteGenerator!.dominantColor!.color,
-                            ),
-                      ],
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    if (copiedColor != null)
-                      Column(
-                        children: [
-                          Text(
-                            'Copied color',
-                            style: kStyle.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                          CircleColor(
-                            color: copiedColor!,
-                            cancelTap: true,
-                          )
-                        ],
+                              color: copiedColor!,
+                              cancelTap: true,
+                            )
+                          ],
+                        ),
+                      const SizedBox(
+                        width: 20,
                       ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    if (hoveredColor != null && hovering)
-                      Column(
-                        children: [
-                          Text(
-                            'Hovered color',
-                            style: kStyle.copyWith(
-                              color: Colors.white,
+                      if (hoveredColor != null && hovering)
+                        Column(
+                          children: [
+                            Text(
+                              'Hovered color',
+                              style: kStyle.copyWith(
+                                color: kColorText,
+                              ),
                             ),
-                          ),
-                          CircleColor(
-                            color: hoveredColor!,
-                            cancelTap: true,
-                          )
-                        ],
-                      ),
-                  ],
-                ),
-              ],
+                            CircleColor(
+                              color: hoveredColor!,
+                              cancelTap: true,
+                            )
+                          ],
+                        ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           // Image preview container
           if (imageData != null)
@@ -401,63 +410,72 @@ class _HomePageDesktopState extends State<HomePageDesktop>
                     await onDrop(files);
                   }
                 },
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Listener(
-                      onPointerHover: (pointer) {
-                        setState(() {
-                          localDx = pointer.localPosition.dx;
-                          localDy = pointer.localPosition.dy;
-                          dx = pointer.localPosition.dx.toInt();
-                          dy = pointer.localPosition.dy.toInt();
-                        });
-                      },
-                      onPointerDown: (pointer) {
-                        ScaffoldMessenger.of(context).clearSnackBars();
-                        Clipboard.setData(
-                          ClipboardData(
-                            text: kColorToHexString(
-                              hoveredColor ?? Colors.white,
+                child: Card(
+                  shadowColor: kColorText,
+                  elevation: 45,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Listener(
+                        onPointerHover: (pointer) {
+                          setState(() {
+                            localDx = pointer.localPosition.dx;
+                            localDy = pointer.localPosition.dy;
+                            dx = pointer.localPosition.dx.toInt();
+                            dy = pointer.localPosition.dy.toInt();
+                          });
+                        },
+                        onPointerDown: (pointer) {
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          Clipboard.setData(
+                            ClipboardData(
+                              text: kColorToHexString(
+                                hoveredColor ?? Colors.white,
+                              ),
                             ),
+                          );
+                          copiedColor = hoveredColor;
+                          if (copiedColor != null) {
+                            kShowCopySnackBar(context, copiedColor!);
+                          }
+                          setState(() {});
+                        },
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.precise,
+                          onExit: (e) {
+                            hovering = false;
+                            hoveredColor = null;
+
+                            setState(() {});
+                          },
+                          onEnter: (e) {
+                            hovering = true;
+
+                            setState(() {});
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.memory(imageData!),
                           ),
-                        );
-                        copiedColor = hoveredColor;
-                        if (copiedColor != null) {
-                          kShowCopySnackBar(context, copiedColor!);
-                        }
-                        setState(() {});
-                      },
-                      child: MouseRegion(
-                        cursor: SystemMouseCursors.precise,
-                        onExit: (e) {
-                          hovering = false;
-                          hoveredColor = null;
-
-                          setState(() {});
-                        },
-                        onEnter: (e) {
-                          hovering = true;
-
-                          setState(() {});
-                        },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.memory(imageData!),
                         ),
                       ),
-                    ),
-                    if (hoveredColor != null && hovering)
-                      Positioned(
-                        left: localDx,
-                        top: localDy,
-                        child: const PhotoMagnifier(),
-                      ),
-                  ],
+                      if (hoveredColor != null && hovering)
+                        Positioned(
+                          left: localDx,
+                          top: localDy,
+                          child: const PhotoMagnifier(),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          const SizedBox()
+          const SizedBox(
+            height: 20,
+          ),
         ],
       ),
     );

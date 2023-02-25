@@ -10,10 +10,10 @@ class PhotoMagnifier extends StatelessWidget {
   Widget build(BuildContext context) {
     return RawMagnifier(
       focalPointOffset: const Offset(-75, -75),
-      decoration: const MagnifierDecoration(
+      decoration: MagnifierDecoration(
         shape: CircleBorder(
           side: BorderSide(
-            color: Color(0xff8D9EFF),
+            color: kColorAppBar,
             width: 4,
           ),
         ),
@@ -22,7 +22,7 @@ class PhotoMagnifier extends StatelessWidget {
       magnificationScale: 3,
       child: Center(
         child: Text(
-          'x',
+          '+',
           style: kStyle.copyWith(
             color: Colors.white,
           ),
