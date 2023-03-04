@@ -203,22 +203,26 @@ class _HomePageDesktopState extends State<HomePageDesktop>
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: const Text("Image's color palette"),
-                      content: SingleChildScrollView(
-                        child: Wrap(
-                          children: [
-                            if (activeColors.isNotEmpty)
-                              ...activeColors.map(
-                                (c) => CircleColor(
-                                  color: c,
-                                  onTap: () {
-                                    setState(() {
-                                      copiedColor = c;
-                                    });
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              )
-                          ],
+                      content: SizedBox(
+                        height: 450,
+                        width: 450,
+                        child: GridView.builder(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 5,
+                          ),
+                          itemCount: activeColors.length,
+                          itemBuilder: (context, index) {
+                            return CircleColor(
+                              color: activeColors[index],
+                              onTap: () {
+                                setState(() {
+                                  copiedColor = activeColors[index];
+                                });
+                                Navigator.pop(context);
+                              },
+                            );
+                          },
                         ),
                       ),
                     );

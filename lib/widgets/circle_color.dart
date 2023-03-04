@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:photocanvas/constants.dart';
+import 'package:photocanvas/helper/assets.dart';
 
 class CircleColor extends StatefulWidget {
   const CircleColor({
@@ -58,13 +60,13 @@ class CircleColorState extends State<CircleColor> {
                     color: kColorText,
                   ),
                 ),
-              Container(
+              SvgPicture.asset(
+                Assets.brush,
                 height: widget.height ?? 50,
                 width: widget.width ?? 50,
-                decoration: BoxDecoration(
-                  color: widget.color,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: kColorAppBar.withOpacity(0.6)),
+                colorFilter: ColorFilter.mode(
+                  widget.color,
+                  BlendMode.srcIn,
                 ),
               ),
             ],

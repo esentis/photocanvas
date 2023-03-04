@@ -1,3 +1,7 @@
+## 1.3.2
+
+- Updates color container with brush asset
+
 ## 1.3.1
 
 - Updates and refines app's color scheme
