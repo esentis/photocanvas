@@ -4,7 +4,7 @@ import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/widgets/circle_color.dart';
 
 class CheckColor extends StatefulWidget {
-  const CheckColor({Key? key}) : super(key: key);
+  const CheckColor({super.key});
 
   @override
   State<CheckColor> createState() => _CheckColorState();

@@ -7,7 +7,7 @@ import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/widgets/title.dart';
 
 class ComingSoon extends StatelessWidget {
-  const ComingSoon({Key? key}) : super(key: key);
+  const ComingSoon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,10 +21,10 @@ class ComingSoon extends StatelessWidget {
         toolbarHeight: 100,
         shadowColor: kColorBackground,
         elevation: 0,
-        title: Row(
+        title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children: [
             PhotocanvasTitle(title: 'Photocanvas'),
           ],
         ),

@@ -5,8 +5,8 @@ import 'package:photocanvas/helper/utils.dart';
 class PhotocanvasTitle extends StatelessWidget {
   const PhotocanvasTitle({
     required this.title,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final String title;
 

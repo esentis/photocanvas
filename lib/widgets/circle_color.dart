@@ -13,8 +13,8 @@ class CircleColor extends StatefulWidget {
     this.cancelTap = false,
     this.showText = true,
     this.textColor,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final Color color;
   final Color? textColor;

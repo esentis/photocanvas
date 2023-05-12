@@ -3,8 +3,8 @@ import 'package:photocanvas/constants.dart';
 
 class PhotoMagnifier extends StatelessWidget {
   const PhotoMagnifier({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

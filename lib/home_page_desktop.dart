@@ -21,8 +21,8 @@ import 'package:photocanvas/widgets/title.dart';
 class HomePageDesktop extends StatefulWidget {
   const HomePageDesktop({
     required this.title,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final String title;
   @override
   State<HomePageDesktop> createState() => _HomePageDesktopState();
