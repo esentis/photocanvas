@@ -288,4 +288,8 @@ fabric.properties
 
 # End of https://www.toptal.com/developers/gitignore/api/flutter,visualstudiocode,dart,androidstudio,xcode
 
+.idea/*
+.idea
+.firebase
 .vscode/*
+.vscode
