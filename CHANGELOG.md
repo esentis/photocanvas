@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Adds meta tag information
+
 ## 2.0.0
 
 - Migrates to Dart 3.0 & Flutter 3.10.0
