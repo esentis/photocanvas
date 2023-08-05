@@ -12,7 +12,7 @@ class ComingSoon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final random = Random().nextInt(comingSoonMessages.length);
-    kLog.wtf(random);
+    kLog.f(random);
     return Scaffold(
       backgroundColor: kColorBackground,
       appBar: AppBar(
