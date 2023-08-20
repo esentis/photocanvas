@@ -373,7 +373,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
                             CircleColor(
                               color: copiedColor!,
                               cancelTap: true,
-                            )
+                            ),
                           ],
                         ),
                       const SizedBox(
@@ -391,7 +391,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
                             CircleColor(
                               color: hoveredColor!,
                               cancelTap: true,
-                            )
+                            ),
                           ],
                         ),
                     ],
