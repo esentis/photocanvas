@@ -15,7 +15,7 @@ class _CheckColorState extends State<CheckColor> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -45,83 +45,45 @@ class _CheckColorState extends State<CheckColor> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 5),
-                  child: Text(
-                    'Check color hex',
-                    style: kStyle.copyWith(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: kColorText,
-                    ),
+                TextField(
+                  cursorRadius: const Radius.circular(12),
+                  cursorColor: kColorTextFieldBorder,
+                  scrollPadding: EdgeInsets.zero,
+                  cursorWidth: 5,
+                  cursorHeight: 30,
+                  maxLength: 8,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  textAlign: TextAlign.center,
+                  style: kStyle.copyWith(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: kColorTextFieldBorder,
+                    height: 1,
                   ),
-                ),
-                SizedBox(
-                  height: 100,
-                  width: 150,
-                  child: TextField(
-                    cursorRadius: const Radius.circular(12),
-                    cursorColor: kColorTextFieldBorder,
-                    scrollPadding: EdgeInsets.zero,
-                    cursorWidth: 5,
-                    cursorHeight: 30,
-                    maxLength: 8,
-                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    textAlign: TextAlign.center,
-                    style: kStyle.copyWith(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: kColorTextFieldBorder,
-                      height: 1,
-                    ),
-                    decoration: InputDecoration(
-                      counterText: '',
-                      contentPadding: EdgeInsets.zero,
-                      fillColor: kColorAppBar,
-                      filled: true,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: kColorTextFieldBorder,
-                          width: 5,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: kColorTextFieldBorder,
-                          width: 2,
-                        ),
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      if (value.length < 6) {
-                        setState(() {
-                          pickedColor = null;
-                        });
-                        return;
-                      }
-                      if (value.startsWith('#')) {
-                        value = value.substring(1);
-                        value = '0xff$value';
-                      } else if (value.startsWith('0x')) {
-                        value = '0x$value';
-                      } else {
-                        value = '0xff$value';
-                      }
-
+                  onChanged: (value) {
+                    if (value.length < 6) {
                       setState(() {
-                        try {
-                          pickedColor = Color(int.parse(value));
-                        } catch (e) {
-                          pickedColor = null;
-                        }
+                        pickedColor = null;
                       });
-                    },
-                  ),
+                      return;
+                    }
+                    if (value.startsWith('#')) {
+                      value = value.substring(1);
+                      value = '0xff$value';
+                    } else if (value.startsWith('0x')) {
+                      value = '0x$value';
+                    } else {
+                      value = '0xff$value';
+                    }
+
+                    setState(() {
+                      try {
+                        pickedColor = Color(int.parse(value));
+                      } catch (e) {
+                        pickedColor = null;
+                      }
+                    });
+                  },
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:clay_containers/widgets/clay_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:photocanvas/constants.dart';
@@ -48,14 +49,17 @@ class ComingSoon extends StatelessWidget {
           Flexible(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: Text(
+              child: ClayText(
                 comingSoonMessages[random],
-                textAlign: TextAlign.center,
                 style: kStyle.copyWith(
-                  fontSize: 33,
-                  fontWeight: FontWeight.bold,
-                  color: kColorText,
+                  fontSize: 35,
                 ),
+                color: kColorText,
+                parentColor: kColorBackground,
+                spread: 6,
+                depth: 25,
+                textColor: kColorText,
+                emboss: true,
               ),
             ),
           ),

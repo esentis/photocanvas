@@ -1,3 +1,6 @@
+import 'package:clay_containers/constants.dart';
+import 'package:clay_containers/widgets/clay_container.dart';
+import 'package:clay_containers/widgets/clay_text.dart';
 import 'package:flutter/material.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/helper/utils.dart';
@@ -18,13 +21,11 @@ class PhotocanvasTitle extends StatelessWidget {
         onTap: () => launchLink('https://www.github.com/esentis'),
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
-          child: Card(
-            elevation: 5,
+          child: ClayContainer(
             color: kColorBackground,
-            shadowColor: kColorText,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+            borderRadius: 50,
+            curveType: CurveType.concave,
+            depth: 5,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: 13,
@@ -32,19 +33,29 @@ class PhotocanvasTitle extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Text(
+                  ClayText(
                     title,
                     style: kStyle.copyWith(
-                      color: kColorText,
                       fontSize: 40,
                     ),
+                    color: kColorText,
+                    parentColor: kColorBackground,
+                    spread: 6,
+                    depth: 25,
+                    textColor: kColorText,
+                    emboss: true,
                   ),
-                  Text(
+                  ClayText(
                     '${Utils.version}',
                     style: kStyle.copyWith(
                       fontSize: 18,
-                      color: kColorText,
                     ),
+                    color: kColorText,
+                    parentColor: kColorBackground,
+                    spread: 6,
+                    depth: 25,
+                    textColor: kColorText,
+                    emboss: true,
                   ),
                 ],
               ),
