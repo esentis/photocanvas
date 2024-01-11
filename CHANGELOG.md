@@ -1,3 +1,7 @@
+## 2.1.0
+
+- Refresh color design
+
 ## 2.0.2
 
 ## 2.0.1

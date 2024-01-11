@@ -16,12 +16,12 @@ Color kColorAppBar = const Color(0xff6C4AB6);
 /// ```dart
 /// Color(0xff3C4048);
 /// ```
-Color kColorBackground = const Color(0xff8D9EFF);
+Color kColorBackground = const Color(0xff232D3F);
 
 ///```dart
 /// Colors.black;
 ///```
-Color kColorText = Colors.black;
+Color kColorText = Colors.white;
 
 /// ```dart
 /// Color(0xffB9E0FF);
