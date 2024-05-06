@@ -51,6 +51,8 @@ String kColorToHexString(Color color) {
   return color.value.toRadixString(16).substring(2, 8);
 }
 
+String kGithubLink = 'https://www.github.com/esentis';
+
 Future<void> launchLink(String url) async {
   if (await canLaunchUrl(Uri.parse(url))) {
     await launchUrl(Uri.parse(url));

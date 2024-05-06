@@ -18,7 +18,7 @@ class PhotocanvasTitle extends StatelessWidget {
     return Align(
       alignment: Alignment.bottomCenter,
       child: GestureDetector(
-        onTap: () => launchLink('https://www.github.com/esentis'),
+        onTap: () => launchLink(kGithubLink),
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
           child: ClayContainer(
