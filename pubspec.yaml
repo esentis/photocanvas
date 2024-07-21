@@ -29,17 +29,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  palette_generator: ^0.3.3+3
-  logger: ^2.3.0
+  palette_generator: ^0.3.3+4
+  logger: ^2.4.0
   drop_zone: ^1.0.2
   url_strategy: ^0.2.0
   url_launcher: ^6.3.0
   image_pixels: ^3.0.2
   image: ^4.2.0
-  very_good_analysis: ^5.1.0
+  very_good_analysis: ^6.0.0
   package_info_plus: ^8.0.0
   flutter_svg: ^2.0.10+1
-  responsive_builder: ^0.7.0
+  responsive_builder: ^0.7.1
   clay_containers: ^0.3.4
 
 dev_dependencies:
