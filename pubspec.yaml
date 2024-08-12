@@ -37,7 +37,7 @@ dependencies:
   image_pixels: ^3.0.2
   image: ^4.2.0
   very_good_analysis: ^6.0.0
-  package_info_plus: ^8.0.1
+  package_info_plus: ^8.0.2
   flutter_svg: ^2.0.10+1
   responsive_builder: ^0.7.1
   clay_containers: ^0.3.4
