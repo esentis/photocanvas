@@ -76,7 +76,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> kShowCopySnackBar(
             sigmaY: 7,
           ),
           child: ColoredBox(
-            color: color.withOpacity(0.8),
+            color: color.withValues(alpha: 0.8),
             child: Center(
               child: Text(
                 '${kColorToHexString(color)}\ncopied to clipboard!',
