@@ -1,3 +1,4 @@
+// Too strict
 // ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable
 
 import 'dart:html' as html;
@@ -73,6 +74,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
       final image = img.decodeImage(imageData as Uint8List);
 
       if (image != null) {
+        // Ignoring the local variable types
         // ignore: omit_local_variable_types
         final img.Image resized = img.copyResize(
           image,
@@ -157,7 +159,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
     final file = files[0];
     try {
       await compute(loadImage, file);
-    } catch (e) {
+    } on Exception catch (e) {
       kLog.e(e);
     }
 

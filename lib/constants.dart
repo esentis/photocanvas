@@ -1,3 +1,4 @@
+// Too strict
 // ignore_for_file: only_throw_errors
 
 import 'dart:ui';
