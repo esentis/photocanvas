@@ -1,5 +1,5 @@
 // Too strict
-// ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable
+// ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable, deprecated_member_use
 
 import 'dart:html' as html;
 import 'dart:ui';
