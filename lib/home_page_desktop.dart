@@ -54,7 +54,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
   double? localDx;
   double? localDy;
 
-  const List<String> validImageFormats = [
+  final List<String> validImageFormats = [
     'jpg',
     'jpeg',
     'png',
