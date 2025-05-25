@@ -54,13 +54,18 @@ class _HomePageDesktopState extends State<HomePageDesktop>
   double? localDx;
   double? localDy;
 
+  const List<String> validImageFormats = [
+    'jpg',
+    'jpeg',
+    'png',
+    'gif',
+    'webp',
+    'avif',
+  ];
+
   bool isValidImage(String fileName) {
-    return fileName.toLowerCase().endsWith('jpg') ||
-        fileName.toLowerCase().endsWith('jpeg') ||
-        fileName.toLowerCase().endsWith('png') ||
-        fileName.toLowerCase().endsWith('gif') ||
-        fileName.toLowerCase().endsWith('webp') ||
-        fileName.toLowerCase().endsWith('avif');
+    return validImageFormats
+        .any((format) => fileName.toLowerCase().endsWith(format));
   }
 
   Future<void> loadImage(html.File file) async {
