@@ -122,3 +122,11 @@ List<String> comingSoonMessages = [
   "Whoops, it looks like Photocanvas needs a little more development to look picture-perfect on mobile and tablet! But don't worry, we're painting a masterpiece of mobile-friendly functionality.\n\nSoon, you'll be able to analyze image colors and grab their hex codes on-the-go, all thanks to Photocanvas! In the meantime, visit us on desktop and we'll try to keep things as bright and vibrant as our favorite filter.",
   "Uh-oh, it looks like Photocanvas hasn't quite found its mobile and tablet filter yet! But don't worry, we're developing a fully adjustable mobile-friendly experience.\n\nSoon, you'll be able to analyze image colors and grab their hex codes on-the-go, all thanks to Photocanvas! In the meantime, visit us on desktop and we'll try to keep things as crisp as a high-resolution image.",
 ];
+final List<String> validImageFormats = [
+  'jpg',
+  'jpeg',
+  'png',
+  'gif',
+  'webp',
+  'avif',
+];

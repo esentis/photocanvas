@@ -54,15 +54,6 @@ class _HomePageDesktopState extends State<HomePageDesktop>
   double? localDx;
   double? localDy;
 
-  final List<String> validImageFormats = [
-    'jpg',
-    'jpeg',
-    'png',
-    'gif',
-    'webp',
-    'avif',
-  ];
-
   bool isValidImage(String fileName) {
     return validImageFormats
         .any((format) => fileName.toLowerCase().endsWith(format));
