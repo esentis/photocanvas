@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:photocanvas/constants.dart';
+import 'package:photocanvas/theme/app_theme.dart';
 
 class PhotoMagnifier extends StatelessWidget {
   const PhotoMagnifier({
@@ -10,10 +10,10 @@ class PhotoMagnifier extends StatelessWidget {
   Widget build(BuildContext context) {
     return RawMagnifier(
       focalPointOffset: const Offset(-75, -75),
-      decoration: MagnifierDecoration(
+      decoration: const MagnifierDecoration(
         shape: CircleBorder(
           side: BorderSide(
-            color: kColorAppBar,
+            color: AppTheme.appBar,
             width: 4,
           ),
         ),
@@ -23,7 +23,7 @@ class PhotoMagnifier extends StatelessWidget {
       child: Center(
         child: Text(
           '+',
-          style: kStyle.copyWith(
+          style: AppTheme.defaultStyle.copyWith(
             color: Colors.white,
           ),
         ),

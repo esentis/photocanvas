@@ -5,47 +5,29 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:photocanvas/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Logger kLog = Logger();
 
-///```dart
-///Color(0xff1F1D36);
-///```
-Color kColorAppBar = const Color(0xff6C4AB6);
+// Legacy color constants - use AppTheme instead
+@Deprecated('Use AppTheme.appBar instead')
+Color kColorAppBar = AppTheme.appBar;
 
-/// ```dart
-/// Color(0xff3C4048);
-/// ```
-Color kColorBackground = const Color(0xff232D3F);
+@Deprecated('Use AppTheme.background instead')
+Color kColorBackground = AppTheme.background;
 
-///```dart
-/// Colors.black;
-///```
-Color kColorText = Colors.white;
+@Deprecated('Use AppTheme.text instead')
+Color kColorText = AppTheme.text;
 
-/// ```dart
-/// Color(0xffB9E0FF);
-/// ```
-Color kColorTextFieldBorder = const Color(0xffB9E0FF);
+@Deprecated('Use AppTheme.textFieldBorder instead')
+Color kColorTextFieldBorder = AppTheme.textFieldBorder;
 
-///```dart
-///Color(0xff66DE93);
-///```
-Color kColorSuccess = const Color(0xff66DE93);
+@Deprecated('Use AppTheme.success instead')
+Color kColorSuccess = AppTheme.success;
 
-/// Default test style of the app
-///
-/// ```dart
-/// fontFamily: 'Dongle',
-/// fontSize: 30.sp,
-/// height: 0.8,
-/// ```
-TextStyle kStyle = const TextStyle(
-  fontFamily: 'Dongle',
-  fontSize: 30,
-  height: 0.8,
-);
+@Deprecated('Use AppTheme.defaultStyle instead')
+TextStyle kStyle = AppTheme.defaultStyle;
 
 // /// Returns the Hex code of the color.
 // String kColorToHexString(Color color) {
@@ -75,6 +57,7 @@ Future<void> launchLink(String url) async {
   }
 }
 
+@Deprecated('Use UiHelper.showCopySnackBar instead')
 ScaffoldFeatureController<SnackBar, SnackBarClosedReason> kShowCopySnackBar(
   BuildContext context,
   Color color,
@@ -122,7 +105,7 @@ List<String> comingSoonMessages = [
   "Whoops, it looks like Photocanvas needs a little more development to look picture-perfect on mobile and tablet! But don't worry, we're painting a masterpiece of mobile-friendly functionality.\n\nSoon, you'll be able to analyze image colors and grab their hex codes on-the-go, all thanks to Photocanvas! In the meantime, visit us on desktop and we'll try to keep things as bright and vibrant as our favorite filter.",
   "Uh-oh, it looks like Photocanvas hasn't quite found its mobile and tablet filter yet! But don't worry, we're developing a fully adjustable mobile-friendly experience.\n\nSoon, you'll be able to analyze image colors and grab their hex codes on-the-go, all thanks to Photocanvas! In the meantime, visit us on desktop and we'll try to keep things as crisp as a high-resolution image.",
 ];
-final List<String> validImageFormats = [
+const List<String> validImageFormats = [
   'jpg',
   'jpeg',
   'png',

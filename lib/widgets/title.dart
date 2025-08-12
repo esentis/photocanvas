@@ -4,6 +4,7 @@ import 'package:clay_containers/widgets/clay_text.dart';
 import 'package:flutter/material.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/helper/utils.dart';
+import 'package:photocanvas/theme/app_theme.dart';
 
 class PhotocanvasTitle extends StatelessWidget {
   const PhotocanvasTitle({
@@ -22,7 +23,7 @@ class PhotocanvasTitle extends StatelessWidget {
         child: MouseRegion(
           cursor: SystemMouseCursors.click,
           child: ClayContainer(
-            color: kColorBackground,
+            color: AppTheme.background,
             borderRadius: 50,
             curveType: CurveType.concave,
             depth: 5,
@@ -35,26 +36,22 @@ class PhotocanvasTitle extends StatelessWidget {
                 children: [
                   ClayText(
                     title,
-                    style: kStyle.copyWith(
-                      fontSize: 40,
-                    ),
-                    color: kColorText,
-                    parentColor: kColorBackground,
-                    spread: 6,
-                    depth: 25,
-                    textColor: kColorText,
+                    style: AppTheme.titleLarge,
+                    color: AppTheme.text,
+                    parentColor: AppTheme.background,
+                    spread: AppTheme.defaultSpread,
+                    depth: AppTheme.defaultDepth.toInt(),
+                    textColor: AppTheme.text,
                     emboss: true,
                   ),
                   ClayText(
                     '${Utils.version}',
-                    style: kStyle.copyWith(
-                      fontSize: 18,
-                    ),
-                    color: kColorText,
-                    parentColor: kColorBackground,
-                    spread: 6,
-                    depth: 25,
-                    textColor: kColorText,
+                    style: AppTheme.bodySmall,
+                    color: AppTheme.text,
+                    parentColor: AppTheme.background,
+                    spread: AppTheme.defaultSpread,
+                    depth: AppTheme.defaultDepth.toInt(),
+                    textColor: AppTheme.text,
                     emboss: true,
                   ),
                 ],

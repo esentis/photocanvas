@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/helper/assets.dart';
+import 'package:photocanvas/helper/ui_helper.dart';
 
 class CircleColor extends StatefulWidget {
   const CircleColor({
@@ -43,7 +44,7 @@ class CircleColorState extends State<CircleColor> {
                   ClipboardData(text: kColorToHexString(widget.color)),
                 );
 
-                kShowCopySnackBar(context, widget.color);
+                UiHelper.showCopySnackBar(context, widget.color);
                 widget.onTap?.call();
               },
         child: Padding(
