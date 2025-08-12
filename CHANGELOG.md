@@ -1,3 +1,35 @@
+## 2.1.2
+
+### 🔧 Major Code Refactoring & Architecture Improvements
+
+- **Architecture Overhaul**: Complete refactoring for better maintainability and performance
+  - Created `AppTheme` class for centralized color and text style management
+  - Implemented immutable `HomePageState` model with proper state management
+  - Added `ImageProcessingService` for better separation of concerns
+  - Created reusable UI components: `ImageDropZone`, `ColorInfoSection`, `InteractiveImageViewer`, `ColorPaletteDialog`
+
+- **Code Quality Improvements**:
+  - Moved `validImageFormats` to const for better performance
+  - Fixed dependency placement (`very_good_analysis` moved to dev_dependencies)
+  - Added proper error handling with custom `ImageProcessingException`
+  - Implemented late initialization for required fields
+  - Added const constructors where applicable
+
+- **Bug Fixes**:
+  - **Fixed clear image functionality**: Resolved issue where "Clear image" button wasn't properly resetting the uploaded image due to faulty `copyWith` method implementation
+  - Improved error handling with specific exceptions instead of generic catches
+  - Enhanced snackbar utilities with centralized `UiHelper` class
+
+- **Performance Enhancements**:
+  - Better memory management with proper state handling
+  - Optimized widget rebuilds with targeted state updates
+  - Improved image processing workflow
+
+- **Developer Experience**:
+  - Deprecated old constants with migration path to new `AppTheme`
+  - Added comprehensive documentation and type safety improvements
+  - Better code organization with clear separation of UI, business logic, and data models
+
 ## 2.1.0
 
 - Refresh color design
