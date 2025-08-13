@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
@@ -64,16 +62,22 @@ class HomePageState {
       containerColor: containerColor ?? this.containerColor,
       containerText: containerText ?? this.containerText,
       focusedColorHex: focusedColorHex ?? this.focusedColorHex,
-      paletteGenerator: paletteGenerator == _sentinel ? this.paletteGenerator : paletteGenerator as PaletteGenerator?,
+      paletteGenerator: paletteGenerator == _sentinel
+          ? this.paletteGenerator
+          : paletteGenerator as PaletteGenerator?,
       activeColors: activeColors ?? this.activeColors,
-      imageData: imageData == _sentinel ? this.imageData : imageData as Uint8List?,
+      imageData:
+          imageData == _sentinel ? this.imageData : imageData as Uint8List?,
       showOverlay: showOverlay ?? this.showOverlay,
       hovering: hovering ?? this.hovering,
       pinnedDetailedColors: pinnedDetailedColors ?? this.pinnedDetailedColors,
       dx: dx == _sentinel ? this.dx : dx as int?,
       dy: dy == _sentinel ? this.dy : dy as int?,
-      hoveredColor: hoveredColor == _sentinel ? this.hoveredColor : hoveredColor as Color?,
-      copiedColor: copiedColor == _sentinel ? this.copiedColor : copiedColor as Color?,
+      hoveredColor: hoveredColor == _sentinel
+          ? this.hoveredColor
+          : hoveredColor as Color?,
+      copiedColor:
+          copiedColor == _sentinel ? this.copiedColor : copiedColor as Color?,
       localDx: localDx == _sentinel ? this.localDx : localDx as double?,
       localDy: localDy == _sentinel ? this.localDy : localDy as double?,
     );
@@ -104,8 +108,7 @@ class HomePageState {
   bool get hasPalette => paletteGenerator != null;
 
   /// Check if there's a dominant color available
-  bool get hasDominantColor =>
-      paletteGenerator?.dominantColor?.color != null;
+  bool get hasDominantColor => paletteGenerator?.dominantColor?.color != null;
 
   @override
   bool operator ==(Object other) {

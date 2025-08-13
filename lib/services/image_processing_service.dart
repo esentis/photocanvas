@@ -34,8 +34,7 @@ class ImageProcessingService {
     }
 
     try {
-      final reader = html.FileReader()
-        ..readAsArrayBuffer(file);
+      final reader = html.FileReader()..readAsArrayBuffer(file);
       await reader.onLoad.first;
 
       final imageData = reader.result as Uint8List;
@@ -59,7 +58,8 @@ class ImageProcessingService {
       if (e is ImageProcessingException) {
         rethrow;
       }
-      throw ImageProcessingException('Failed to process image: ${e.toString()}');
+      throw ImageProcessingException(
+          'Failed to process image: ${e.toString()}');
     }
   }
 

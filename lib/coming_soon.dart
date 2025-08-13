@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/helper/assets.dart';
+import 'package:photocanvas/theme/app_theme.dart';
 import 'package:photocanvas/widgets/title.dart';
 
 class ComingSoon extends StatelessWidget {
@@ -15,12 +16,12 @@ class ComingSoon extends StatelessWidget {
     final random = Random().nextInt(comingSoonMessages.length);
     kLog.f(random);
     return Scaffold(
-      backgroundColor: kColorBackground,
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        backgroundColor: kColorBackground,
+        backgroundColor: AppTheme.background,
         centerTitle: true,
         toolbarHeight: 100,
-        shadowColor: kColorBackground,
+        shadowColor: AppTheme.background,
         elevation: 0,
         title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -51,14 +52,14 @@ class ComingSoon extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 25),
               child: ClayText(
                 comingSoonMessages[random],
-                style: kStyle.copyWith(
+                style: AppTheme.defaultStyle.copyWith(
                   fontSize: 35,
                 ),
-                color: kColorText,
-                parentColor: kColorBackground,
+                color: AppTheme.text,
+                parentColor: AppTheme.background,
                 spread: 6,
                 depth: 25,
-                textColor: kColorText,
+                textColor: AppTheme.text,
                 emboss: true,
               ),
             ),

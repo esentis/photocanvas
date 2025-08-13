@@ -58,7 +58,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
   Future<void> _loadImage(html.File file) async {
     try {
       final imageData = await ImageProcessingService.processImageFile(file);
-      
+
       if (imageData != null) {
         _updateState(_state.copyWith(imageData: imageData));
         Navigator.pop(context);
@@ -81,7 +81,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
 
   Future<void> _onDrop(List<html.File> files) async {
     _updateState(_state.copyWith(copiedColor: null));
-    
+
     _showAnalyzingDialog();
     await Future<void>.delayed(const Duration(milliseconds: 250));
 
@@ -90,12 +90,12 @@ class _HomePageDesktopState extends State<HomePageDesktop>
 
     if (_state.imageData != null) {
       try {
-        final paletteGenerator = await ImageProcessingService.generateColorPalette(
+        final paletteGenerator =
+            await ImageProcessingService.generateColorPalette(
           _state.imageData!,
-          maximumColorCount: 200,
         );
         final activeColors = paletteGenerator.colors.toList();
-        
+
         _updateState(_state.copyWith(
           paletteGenerator: paletteGenerator,
           activeColors: activeColors,
@@ -145,7 +145,6 @@ class _HomePageDesktopState extends State<HomePageDesktop>
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,7 +176,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
 
   Widget _buildPaletteButton() {
     return GestureDetector(
-      onTap: () => _showColorPalette(),
+      onTap: _showColorPalette,
       child: Padding(
         padding: const EdgeInsets.only(right: 14),
         child: MouseRegion(
