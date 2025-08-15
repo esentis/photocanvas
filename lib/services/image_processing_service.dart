@@ -37,7 +37,12 @@ class ImageProcessingService {
       final reader = html.FileReader()..readAsArrayBuffer(file);
       await reader.onLoad.first;
 
-      final imageData = reader.result as Uint8List;
+      final imageData = reader.result as Uint8List?;
+      if (imageData == null) {
+        throw const ImageProcessingException(
+          'Failed to read the image data. The file may be corrupted.',
+        );
+      }
       final image = img.decodeImage(imageData);
 
       if (image == null) {
