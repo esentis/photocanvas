@@ -63,8 +63,7 @@ class ImageProcessingService {
       if (e is ImageProcessingException) {
         rethrow;
       }
-      throw ImageProcessingException(
-          'Failed to process image: ${e.toString()}');
+      throw ImageProcessingException('Failed to process image: $e');
     }
   }
 
@@ -80,7 +79,7 @@ class ImageProcessingService {
       );
     } catch (e) {
       throw ImageProcessingException(
-        'Failed to generate color palette: ${e.toString()}',
+        'Failed to generate color palette: $e',
       );
     }
   }
