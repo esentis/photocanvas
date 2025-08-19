@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/helper/ui_helper.dart';
+import 'package:photocanvas/theme/app_theme.dart';
 
 class CircleColor extends StatefulWidget {
   const CircleColor({
@@ -56,9 +57,9 @@ class CircleColorState extends State<CircleColor> {
                   kColorToHexString(
                     widget.color,
                   ),
-                  style: kStyle.copyWith(
+                  style: AppTheme.defaultStyle.copyWith(
                     fontSize: 25,
-                    color: kColorText,
+                    color: AppTheme.text,
                   ),
                 ),
               SvgPicture.asset(
