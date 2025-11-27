@@ -36,7 +36,7 @@ dependencies:
   url_launcher: ^6.3.1
   image_pixels: ^4.0.0
   image: ^4.3.0
-  package_info_plus: ^8.1.0
+  package_info_plus: ^9.0.0
   flutter_svg: ^2.0.11
   responsive_builder: ^0.7.1
   clay_containers: ^0.3.4
@@ -51,7 +51,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-  very_good_analysis: ^9.0.0
+  very_good_analysis: ^10.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
