@@ -1,5 +1,5 @@
 // Too strict
-// ignore_for_file: unawaited_futures, use_build_context_synchronously, cascade_invocations, cast_nullable_to_non_nullable, deprecated_member_use
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
 import 'dart:html' as html;
 import 'dart:ui';
@@ -82,7 +82,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
   Future<void> _onDrop(List<html.File> files) async {
     _updateState(_state.copyWith(copiedColor: null));
 
-    _showAnalyzingDialog();
+    await _showAnalyzingDialog();
     await Future<void>.delayed(const Duration(milliseconds: 250));
 
     final file = files[0];
@@ -96,12 +96,14 @@ class _HomePageDesktopState extends State<HomePageDesktop>
         );
         final activeColors = paletteGenerator.colors.toList();
 
-        _updateState(_state.copyWith(
-          paletteGenerator: paletteGenerator,
-          activeColors: activeColors,
-          containerColor: Colors.white,
-          containerText: 'Drop your image here',
-        ));
+        _updateState(
+          _state.copyWith(
+            paletteGenerator: paletteGenerator,
+            activeColors: activeColors,
+            containerColor: Colors.white,
+            containerText: 'Drop your image here',
+          ),
+        );
       } on ImageProcessingException catch (e) {
         UiHelper.showErrorSnackBar(context, message: e.message);
         kLog.e('Palette generation failed: ${e.message}');
@@ -109,8 +111,8 @@ class _HomePageDesktopState extends State<HomePageDesktop>
     }
   }
 
-  void _showAnalyzingDialog() {
-    showDialog<void>(
+  Future<void> _showAnalyzingDialog() async {
+    await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.background,
@@ -191,8 +193,8 @@ class _HomePageDesktopState extends State<HomePageDesktop>
     );
   }
 
-  void _showColorPalette() {
-    ColorPaletteDialog.show(
+  Future<void> _showColorPalette() async {
+    await ColorPaletteDialog.show(
       context: context,
       colors: _state.activeColors,
       onColorSelected: (Color color) {
@@ -302,10 +304,10 @@ class _HomePageDesktopState extends State<HomePageDesktop>
     );
   }
 
-  void _handleColorCopy() {
+  Future<void> _handleColorCopy() async {
     ScaffoldMessenger.of(context).clearSnackBars();
     if (_state.hoveredColor != null) {
-      Clipboard.setData(
+      await Clipboard.setData(
         ClipboardData(
           text: kColorToHexString(_state.hoveredColor!),
         ),

@@ -39,13 +39,14 @@ class CircleColorState extends State<CircleColor> {
       child: GestureDetector(
         onTap: widget.cancelTap
             ? null
-            : () {
+            : () async {
                 ScaffoldMessenger.of(context).clearSnackBars();
-                Clipboard.setData(
+                await Clipboard.setData(
                   ClipboardData(text: kColorToHexString(widget.color)),
                 );
-
-                UiHelper.showCopySnackBar(context, widget.color);
+                if (context.mounted) {
+                  UiHelper.showCopySnackBar(context, widget.color);
+                }
                 widget.onTap?.call();
               },
         child: Padding(
