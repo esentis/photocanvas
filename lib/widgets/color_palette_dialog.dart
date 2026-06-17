@@ -56,7 +56,7 @@ class ColorPaletteDialog extends StatelessWidget {
   }) {
     return showDialog<void>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return ColorPaletteDialog(
           colors: colors,
           onColorSelected: onColorSelected,

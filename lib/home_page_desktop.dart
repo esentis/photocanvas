@@ -197,7 +197,7 @@ class _HomePageDesktopState extends State<HomePageDesktop>
     await ColorPaletteDialog.show(
       context: context,
       colors: _state.activeColors,
-      onColorSelected: (Color color) {
+      onColorSelected: (color) {
         _updateState(_state.copyWith(copiedColor: color));
       },
     );

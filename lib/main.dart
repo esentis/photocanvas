@@ -30,11 +30,10 @@ class MyApp extends StatelessWidget {
         },
       ),
       home: ScreenTypeLayout.builder(
-        mobile: (BuildContext context) => const ComingSoon(),
-        tablet: (BuildContext context) => const ComingSoon(),
-        desktop: (BuildContext context) =>
-            const HomePageDesktop(title: 'Photocanvas'),
-        watch: (BuildContext context) => const ComingSoon(),
+        mobile: (context) => const ComingSoon(),
+        tablet: (context) => const ComingSoon(),
+        desktop: (context) => const HomePageDesktop(title: 'Photocanvas'),
+        watch: (context) => const ComingSoon(),
       ),
       // home: const HomePage(title: 'Photocanvas'),
     );
