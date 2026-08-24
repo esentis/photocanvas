@@ -1,3 +1,23 @@
+## 2.2.0
+
+### 🐛 Critical Bug Fixes & Hover Performance Overhaul
+
+- **Bug Fixes**:
+  - **Fixed crash when dropping an image** ("Trying to render a disposed EngineFlutterView"): the analyzing dialog lifecycle was coupled to processing through `Navigator.pop` calls; any race could pop the page route and dispose the view on web
+  - **Fixed copied hex codes**: colors are now copied in the standard `#RRGGBB` format (previously emitted 8-digit `ffRRGGBB` with alpha and no `#`, which design tools reject)
+  - Analyzing dialog is no longer dismissible by clicking outside, and can never get stuck on screen
+
+- **Performance Enhancements**:
+  - Eliminated full-page rebuilds on mouse move (previously ~2 full-tree rebuilds per pointer event): hover state now lives in `ValueNotifier`s consumed by leaf widgets (`ValueListenableBuilder`), so only the magnifier and hovered-color chip rebuild while hovering
+  - Removed duplicate `ImagePixels` widget that held a second full RGBA pixel buffer of the loaded image
+  - Pixel color lookups now happen imperatively from the cached pixel buffer instead of through build + post-frame callback round-trips
+
+- **Reliability & Architecture**:
+  - Added concurrency guard: dropping a second image while one is being analyzed is safely ignored instead of racing dialogs
+  - Dialog dismissal uses `Navigator.removeRoute` with a captured `DialogRoute` handle, structurally preventing page-route pops regardless of navigation state
+  - Added `mounted` checks after all async gaps before using `BuildContext`
+  - Slimmed `HomePageState` (hover fields moved to notifiers) and removed dead code (unused `AnimationController`)
+
 ## 2.1.2
 
 ### 🔧 Major Code Refactoring & Architecture Improvements
