@@ -29,23 +29,9 @@ Color kColorSuccess = AppTheme.success;
 @Deprecated('Use AppTheme.defaultStyle instead')
 TextStyle kStyle = AppTheme.defaultStyle;
 
-// /// Returns the Hex code of the color.
-// String kColorToHexString(Color color) {
-//   return color.value.toRadixString(16).substring(2, 8);
-// }
-
-String kColorToHexString(Color color, {bool leadingHashSign = false}) {
-  final alpha = (color.a * 255).round();
-  final red = (color.r * 255).round();
-  final green = (color.g * 255).round();
-  final blue = (color.b * 255).round();
-
-  return '${leadingHashSign ? '#' : ''}'
-      '${alpha.toRadixString(16).padLeft(2, '0')}'
-      '${red.toRadixString(16).padLeft(2, '0')}'
-      '${green.toRadixString(16).padLeft(2, '0')}'
-      '${blue.toRadixString(16).padLeft(2, '0')}';
-}
+/// Returns the hex code of the color in standard `#RRGGBB` format.
+String kColorToHexString(Color color) =>
+    '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
 
 String kGithubLink = 'https://www.github.com/esentis';
 
