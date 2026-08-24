@@ -15,14 +15,8 @@ class HomePageState {
     this.activeColors = const [],
     this.imageData,
     this.showOverlay = false,
-    this.hovering = false,
     this.pinnedDetailedColors = false,
-    this.dx,
-    this.dy,
-    this.hoveredColor,
     this.copiedColor,
-    this.localDx,
-    this.localDy,
   });
 
   final Color containerColor;
@@ -32,14 +26,8 @@ class HomePageState {
   final List<Color> activeColors;
   final Uint8List? imageData;
   final bool showOverlay;
-  final bool hovering;
   final bool pinnedDetailedColors;
-  final int? dx;
-  final int? dy;
-  final Color? hoveredColor;
   final Color? copiedColor;
-  final double? localDx;
-  final double? localDy;
 
   HomePageState copyWith({
     Color? containerColor,
@@ -49,14 +37,8 @@ class HomePageState {
     List<Color>? activeColors,
     Object? imageData = _sentinel,
     bool? showOverlay,
-    bool? hovering,
     bool? pinnedDetailedColors,
-    Object? dx = _sentinel,
-    Object? dy = _sentinel,
-    Object? hoveredColor = _sentinel,
     Object? copiedColor = _sentinel,
-    Object? localDx = _sentinel,
-    Object? localDy = _sentinel,
   }) {
     return HomePageState(
       containerColor: containerColor ?? this.containerColor,
@@ -69,17 +51,9 @@ class HomePageState {
       imageData:
           imageData == _sentinel ? this.imageData : imageData as Uint8List?,
       showOverlay: showOverlay ?? this.showOverlay,
-      hovering: hovering ?? this.hovering,
       pinnedDetailedColors: pinnedDetailedColors ?? this.pinnedDetailedColors,
-      dx: dx == _sentinel ? this.dx : dx as int?,
-      dy: dy == _sentinel ? this.dy : dy as int?,
-      hoveredColor: hoveredColor == _sentinel
-          ? this.hoveredColor
-          : hoveredColor as Color?,
       copiedColor:
           copiedColor == _sentinel ? this.copiedColor : copiedColor as Color?,
-      localDx: localDx == _sentinel ? this.localDx : localDx as double?,
-      localDy: localDy == _sentinel ? this.localDy : localDy as double?,
     );
   }
 
@@ -90,12 +64,6 @@ class HomePageState {
       paletteGenerator: null,
       activeColors: const [],
       copiedColor: null,
-      hoveredColor: null,
-      dx: null,
-      dy: null,
-      localDx: null,
-      localDy: null,
-      hovering: false,
       containerColor: Colors.white,
       containerText: 'Drop your image here',
     );
@@ -122,14 +90,8 @@ class HomePageState {
         other.activeColors == activeColors &&
         other.imageData == imageData &&
         other.showOverlay == showOverlay &&
-        other.hovering == hovering &&
         other.pinnedDetailedColors == pinnedDetailedColors &&
-        other.dx == dx &&
-        other.dy == dy &&
-        other.hoveredColor == hoveredColor &&
-        other.copiedColor == copiedColor &&
-        other.localDx == localDx &&
-        other.localDy == localDy;
+        other.copiedColor == copiedColor;
   }
 
   @override
@@ -142,14 +104,8 @@ class HomePageState {
       activeColors,
       imageData,
       showOverlay,
-      hovering,
       pinnedDetailedColors,
-      dx,
-      dy,
-      hoveredColor,
       copiedColor,
-      localDx,
-      localDy,
     ]);
   }
 }

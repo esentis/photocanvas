@@ -1,4 +1,5 @@
 import 'package:clay_containers/widgets/clay_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/theme/app_theme.dart';
@@ -9,14 +10,14 @@ class ColorInfoSection extends StatelessWidget {
     required this.paletteGenerator,
     required this.hoveredColor,
     required this.copiedColor,
-    required this.hovering,
     super.key,
   });
 
   final PaletteGenerator? paletteGenerator;
-  final Color? hoveredColor;
+
+  /// Listened to locally so hover updates only rebuild the hovered chip.
+  final ValueListenable<Color?> hoveredColor;
   final Color? copiedColor;
-  final bool hovering;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +31,14 @@ class ColorInfoSection extends StatelessWidget {
           const SizedBox(width: 20),
           if (copiedColor != null) _CopiedColorSection(color: copiedColor!),
           const SizedBox(width: 20),
-          if (hoveredColor != null && hovering)
-            _HoveredColorSection(color: hoveredColor!),
+          ValueListenableBuilder<Color?>(
+            valueListenable: hoveredColor,
+            builder: (context, color, _) => Column(
+              children: [
+                if (color != null) _HoveredColorSection(color: color),
+              ],
+            ),
+          ),
         ],
       ),
     );
