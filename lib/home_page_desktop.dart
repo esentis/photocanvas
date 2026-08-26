@@ -9,7 +9,7 @@ import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:image_pixels/image_pixels.dart';
+import 'package:image_pixels_plus/image_pixels_plus.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/helper/ui_helper.dart';
@@ -282,7 +282,7 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
       children: [
         Stack(
           children: [
-            ImagePixels(
+            ImagePixelsPlus(
               imageProvider: MemoryImage(imageData),
               builder: (_, img) {
                 // Keep the pixel buffer reachable for hover lookups without

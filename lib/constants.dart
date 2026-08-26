@@ -98,4 +98,5 @@ const List<String> validImageFormats = [
   'gif',
   'webp',
   'avif',
+  'svg',
 ];

@@ -1,8 +1,10 @@
 import 'dart:html' as html;
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
+import 'package:image_pixels_plus/image_pixels_plus.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 
@@ -21,6 +23,36 @@ class ImageProcessingService {
         .any((format) => fileName.toLowerCase().endsWith(format));
   }
 
+  static bool _isSvg(String fileName) =>
+      fileName.toLowerCase().endsWith('.svg');
+
+  /// Rasterizes raw SVG bytes into PNG bytes so the result can be displayed
+  /// and pixel-sampled like any raster image.
+  static Future<Uint8List?> _rasterizeSvgBytes(
+    Uint8List svgBytes, {
+    int? targetHeight = 310,
+    int? targetWidth,
+  }) async {
+    final rasterized = await rasterizeSvg(
+      svgBytes: svgBytes,
+      width: targetWidth?.toDouble(),
+      height: targetHeight?.toDouble(),
+    );
+    try {
+      final png = await rasterized.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+      if (png == null) {
+        throw const ImageProcessingException(
+          'Failed to rasterize the SVG. The file may be corrupted.',
+        );
+      }
+      return png.buffer.asUint8List();
+    } finally {
+      rasterized.dispose();
+    }
+  }
+
   /// Processes and resizes an image file
   static Future<Uint8List?> processImageFile(
     html.File file, {
@@ -29,7 +61,7 @@ class ImageProcessingService {
   }) async {
     if (!isValidImageFormat(file.name)) {
       throw const ImageProcessingException(
-        'File is not a valid image format (JPG, JPEG, PNG, GIF, WEBP, AVIF)',
+        'File is not a valid image format (JPG, JPEG, PNG, GIF, WEBP, AVIF, SVG)',
       );
     }
 
@@ -43,6 +75,17 @@ class ImageProcessingService {
           'Failed to read the image data. The file may be corrupted.',
         );
       }
+
+      // SVGs are vector graphics: rasterize them once into PNG pixels so
+      // display, palette extraction and hover sampling all share one source.
+      if (_isSvg(file.name)) {
+        return _rasterizeSvgBytes(
+          imageData,
+          targetHeight: targetHeight,
+          targetWidth: targetWidth,
+        );
+      }
+
       final image = img.decodeImage(imageData);
 
       if (image == null) {
