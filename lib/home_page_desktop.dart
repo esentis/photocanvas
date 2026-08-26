@@ -19,6 +19,7 @@ import 'package:photocanvas/theme/app_theme.dart';
 import 'package:photocanvas/widgets/color_info_section.dart';
 import 'package:photocanvas/widgets/color_palette_dialog.dart';
 import 'package:photocanvas/widgets/image_drop_zone.dart';
+import 'package:photocanvas/widgets/image_info_section.dart';
 import 'package:photocanvas/widgets/interactive_image_viewer.dart';
 import 'package:photocanvas/widgets/title.dart';
 
@@ -83,12 +84,18 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
 
     try {
       await Future<void>.delayed(const Duration(milliseconds: 250));
-      final imageData =
-          await ImageProcessingService.processImageFile(files.first);
+      final processed = await ImageProcessingService.processImageFile(
+        files.first,
+      );
 
       if (!mounted) return;
-      if (imageData != null) {
-        _updateState(_state.copyWith(imageData: imageData));
+      if (processed != null) {
+        _updateState(
+          _state.copyWith(
+            imageData: processed.data,
+            imageAnalysis: processed.analysis,
+          ),
+        );
         await _generatePalette();
       }
     } on ImageProcessingException catch (e) {
@@ -114,6 +121,10 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
     try {
       final paletteGenerator =
           await ImageProcessingService.generateColorPalette(imageData);
+      final accessibilityReport = ImageProcessingService.analyzeAccessibility(
+        imageData,
+        paletteGenerator.colors.take(6).toList(),
+      );
 
       if (!mounted) return;
       _updateState(
@@ -122,6 +133,7 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
           activeColors: paletteGenerator.colors.toList(),
           containerColor: Colors.white,
           containerText: 'Drop your image here',
+          accessibilityReport: accessibilityReport,
         ),
       );
     } on ImageProcessingException catch (e) {
@@ -311,6 +323,11 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
           pointerLocalPos: _pointerLocalPos,
           onClearImage: _clearImage,
         ),
+        if (_state.imageAnalysis != null)
+          ImageInfoSection(
+            analysis: _state.imageAnalysis!,
+            report: _state.accessibilityReport,
+          ),
       ],
     );
   }

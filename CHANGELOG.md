@@ -1,3 +1,34 @@
+## 2.3.0
+
+### ✨ Image Insights: File Information & Accessibility Analysis
+
+- **New: Image information panel** (below the viewer):
+  - Shows file name, true format, file size, original dimensions, megapixels, aspect ratio and orientation for the dropped image
+  - Format is detected from magic bytes (JPEG/PNG/GIF/WebP/AVIF, with SVG by extension) instead of trusting the file extension
+  - Metadata is captured at drop time, before the image is resized/re-encoded for display
+  - Warns when the image resolution is too low to survive zooming
+
+- **New: SVG support**:
+  - `.svg` files can now be dropped for analysis like any raster image
+  - SVGs are rasterized once into PNG pixels (via `image_pixels_plus`'s `rasterizeSvg`), so display, palette extraction and hover color sampling all share one identical pixel source
+  - Added `svg` to the accepted file formats
+
+- **New: Accessibility insights**:
+  - WCAG 2.1 contrast ratios of the dominant palette colors against white and black text
+  - AA (4.5:1) / AAA (7:1) PASS/FAIL badges per color, styled with the theme's success/error colors
+  - Average image brightness with a plain-language recommendation for overlaying text
+
+- **Fixed: magnifier UX & rendering**:
+  - The loupe is now centered on the cursor instead of offset to its bottom-right (the `+` crosshair sits dead-center on the sampled pixel)
+  - Replaced `RawMagnifier`'s backdrop-filter rendering with direct painting of the magnified region (`CustomPainter` + decoded image); fixes the lens flickering/vanishing on Flutter web whenever frames stopped being produced
+  - Lens stays solid while the cursor rests inside the image; hover/click still pass through to the image below
+
+- **Under the hood**:
+  - Migrated from `image_pixels` to `image_pixels_plus`, a maintained fork that fixes Flutter web pixel readback and keeps the same `ImgDetails` API
+  - `ImageProcessingService.processImageFile` now returns a `ProcessedImage` (display bytes + original-file analysis)
+  - Added immutable `ImageAnalysis` and `AccessibilityReport` models; `HomePageState` carries them through the sentinel `copyWith` pattern and resets them on clear
+  - Added unit tests covering size formatting, aspect-ratio reduction, orientation, low-resolution detection and WCAG threshold logic
+
 ## 2.2.0
 
 ### 🐛 Critical Bug Fixes & Hover Performance Overhaul

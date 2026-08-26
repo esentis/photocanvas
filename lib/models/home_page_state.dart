@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
+import 'package:photocanvas/models/accessibility_report.dart';
+import 'package:photocanvas/models/image_analysis.dart';
 
 // Sentinel object for copyWith method
 const Object _sentinel = Object();
@@ -17,6 +19,8 @@ class HomePageState {
     this.showOverlay = false,
     this.pinnedDetailedColors = false,
     this.copiedColor,
+    this.imageAnalysis,
+    this.accessibilityReport,
   });
 
   final Color containerColor;
@@ -29,6 +33,10 @@ class HomePageState {
   final bool pinnedDetailedColors;
   final Color? copiedColor;
 
+  /// Metadata of the originally dropped file.
+  final ImageAnalysis? imageAnalysis;
+  final AccessibilityReport? accessibilityReport;
+
   HomePageState copyWith({
     Color? containerColor,
     String? containerText,
@@ -39,6 +47,8 @@ class HomePageState {
     bool? showOverlay,
     bool? pinnedDetailedColors,
     Object? copiedColor = _sentinel,
+    Object? imageAnalysis = _sentinel,
+    Object? accessibilityReport = _sentinel,
   }) {
     return HomePageState(
       containerColor: containerColor ?? this.containerColor,
@@ -54,6 +64,12 @@ class HomePageState {
       pinnedDetailedColors: pinnedDetailedColors ?? this.pinnedDetailedColors,
       copiedColor:
           copiedColor == _sentinel ? this.copiedColor : copiedColor as Color?,
+      imageAnalysis: imageAnalysis == _sentinel
+          ? this.imageAnalysis
+          : imageAnalysis as ImageAnalysis?,
+      accessibilityReport: accessibilityReport == _sentinel
+          ? this.accessibilityReport
+          : accessibilityReport as AccessibilityReport?,
     );
   }
 
@@ -66,6 +82,8 @@ class HomePageState {
       copiedColor: null,
       containerColor: Colors.white,
       containerText: 'Drop your image here',
+      imageAnalysis: null,
+      accessibilityReport: null,
     );
   }
 
@@ -91,7 +109,9 @@ class HomePageState {
         other.imageData == imageData &&
         other.showOverlay == showOverlay &&
         other.pinnedDetailedColors == pinnedDetailedColors &&
-        other.copiedColor == copiedColor;
+        other.copiedColor == copiedColor &&
+        other.imageAnalysis == imageAnalysis &&
+        other.accessibilityReport == accessibilityReport;
   }
 
   @override
@@ -106,6 +126,8 @@ class HomePageState {
       showOverlay,
       pinnedDetailedColors,
       copiedColor,
+      imageAnalysis,
+      accessibilityReport,
     ]);
   }
 }
