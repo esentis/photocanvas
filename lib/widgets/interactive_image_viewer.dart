@@ -53,7 +53,7 @@ class InteractiveImageViewer extends StatelessWidget {
                     onPointerHover: onPointerHover,
                     onPointerDown: onPointerDown,
                     child: MouseRegion(
-                      cursor: SystemMouseCursors.precise,
+                      //cursor: SystemMouseCursors.precise,
                       onExit: (_) => onMouseExit(),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
@@ -61,16 +61,9 @@ class InteractiveImageViewer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  ValueListenableBuilder<Offset?>(
-                    valueListenable: pointerLocalPos,
-                    builder: (context, position, _) {
-                      if (position == null) return const SizedBox.shrink();
-                      return Positioned(
-                        left: position.dx,
-                        top: position.dy,
-                        child: const PhotoMagnifier(),
-                      );
-                    },
+                  MagnifierOverlay(
+                    imageData: imageData,
+                    pointerLocalPos: pointerLocalPos,
                   ),
                 ],
               ),
