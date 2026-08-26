@@ -124,6 +124,7 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
       final accessibilityReport = ImageProcessingService.analyzeAccessibility(
         imageData,
         paletteGenerator.colors.take(6).toList(),
+        backdropColor: AppTheme.imageBackdrop,
       );
 
       if (!mounted) return;
@@ -134,7 +135,10 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
           containerColor: Colors.white,
           containerText: 'Drop your image here',
           accessibilityReport: accessibilityReport,
-          textPlacement: TextPlacementService.analyze(imageData),
+          textPlacement: TextPlacementService.analyze(
+            imageData,
+            backdropColor: AppTheme.imageBackdrop,
+          ),
           showTextZone: false,
         ),
       );

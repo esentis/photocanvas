@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:photocanvas/models/accessibility_report.dart';
 
 /// Where overlay text should sit on an image so it stays readable.
 ///
@@ -34,5 +35,5 @@ class TextPlacementSuggestion {
   /// The suggested overlay text color.
   Color get textColor => useWhiteText ? Colors.white : Colors.black;
 
-  bool get passesAa => contrastRatio >= 4.5;
+  bool get passesAa => contrastRatio >= ColorContrast.aaThreshold;
 }

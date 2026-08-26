@@ -57,6 +57,7 @@ class InteractiveImageViewer extends StatelessWidget {
             onDrop: onDrop,
             child: Container(
               decoration: BoxDecoration(
+                color: AppTheme.imageBackdrop,
                 borderRadius: BorderRadius.circular(AppTheme.radiusXl),
                 border: Border.all(color: AppTheme.strokeStrong),
                 boxShadow: AppTheme.cardShadow,

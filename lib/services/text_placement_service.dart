@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'dart:ui' show Rect;
+import 'dart:ui' show Color, Rect;
 
 import 'package:image/image.dart' as img;
 import 'package:photocanvas/models/accessibility_report.dart';
@@ -11,13 +11,25 @@ import 'package:photocanvas/models/text_placement.dart';
 /// so it stays unit-testable.
 abstract final class TextPlacementService {
   /// Sliding windows are scored primarily by conservative WCAG contrast, then
-  /// by luminance uniformity and visual calm. Integral images keep the
-  /// variance and edge-density parts of every candidate evaluation O(1).
-  static TextPlacementSuggestion? analyze(Uint8List imageData) {
+  /// by luminance uniformity and visual calm. The image is composited over the
+  /// same explicit opaque [backdropColor] used by its viewer before any
+  /// luminance is measured.
+  ///
+  /// Integral images and separable sliding extrema keep every candidate
+  /// evaluation O(1), allowing every valid integer window start to be tested
+  /// in O(image area) total time.
+  static TextPlacementSuggestion? analyze(
+    Uint8List imageData, {
+    required Color backdropColor,
+  }) {
+    _validateOpaqueBackdrop(backdropColor);
     final image = _tryDecode(imageData);
     if (image == null) return null;
 
-    return _analyzeDecoded(image);
+    return _analyzeDecoded(
+      image,
+      _NormalizedBackdrop.fromColor(backdropColor),
+    );
   }
 
   /// Decoding arbitrary bytes can throw inside format probes; a placement
@@ -26,12 +38,15 @@ abstract final class TextPlacementService {
     if (imageData.length < 16) return null;
     try {
       return img.decodeImage(imageData);
-    } on Exception {
+    } on Object catch (_) {
       return null;
     }
   }
 
-  static TextPlacementSuggestion? _analyzeDecoded(img.Image image) {
+  static TextPlacementSuggestion? _analyzeDecoded(
+    img.Image image,
+    _NormalizedBackdrop backdrop,
+  ) {
     final width = image.width;
     final height = image.height;
     if (width < 16 || height < 16) return null;
@@ -40,7 +55,10 @@ abstract final class TextPlacementService {
     final lum = Float64List(width * height);
     var index = 0;
     for (final pixel in image.data!) {
-      lum[index++] = relativeLuminance(pixel.r, pixel.g, pixel.b);
+      lum[index++] = _relativeLuminanceFromPixel(
+        pixel,
+        backdrop: backdrop,
+      );
     }
 
     // Integral sums of luminance, squared luminance, and adjacent-pixel edge
@@ -82,17 +100,19 @@ abstract final class TextPlacementService {
     // Search window ≈ a classic lower-third banner, position-free.
     final winW = (width * 0.6).round().clamp(8, width);
     final winH = (height * 0.3).round().clamp(6, height);
-    final stepX = (winW / 4).floor().clamp(1, winW);
-    final stepY = (winH / 4).floor().clamp(1, winH);
     final maxX = width - winW;
     final maxY = height - winH;
-    final preferredX = (width * 0.5 - winW / 2).round().clamp(0, maxX);
-    final preferredY = (height * 0.8 - winH / 2).round().clamp(0, maxY);
-    final xCandidates = _candidateStarts(maxX, stepX, preferredX);
-    final yCandidates = _candidateStarts(maxY, stepY, preferredY);
+    final extrema = _slidingWindowExtrema(
+      lum,
+      imageWidth: width,
+      imageHeight: height,
+      windowWidth: winW,
+      windowHeight: winH,
+    );
 
     var bestScore = -1.0;
     var bestAestheticScore = -double.infinity;
+    var bestPassesAa = false;
     var bestX = 0;
     var bestY = 0;
     var bestMean = 0.0;
@@ -100,18 +120,24 @@ abstract final class TextPlacementService {
     var bestContrastRatio = 1.0;
     var bestUseWhiteText = true;
 
-    for (final y in yCandidates) {
-      for (final x in xCandidates) {
+    for (var y = 0; y <= maxY; y++) {
+      for (var x = 0; x <= maxX; x++) {
         final n = (winW * winH).toDouble();
         final mean = windowSum(sum, x, y, winW, winH) / n;
         final variance = (windowSum(sumSq, x, y, winW, winH) / n - mean * mean)
             .clamp(0.0, 1.0);
         final stdDev = math.sqrt(variance);
 
-        // WCAG contrast is evaluated separately for white and black using
-        // conservative background percentiles. A mean can hide unreadable
-        // pixels, while the bright/dark tails expose them.
-        final contrast = _evaluateContrast(lum, width, x, y, winW, winH);
+        // WCAG contrast is evaluated separately for white and black against
+        // the adverse pixel for that text color. A mean or percentile can
+        // hide a small unreadable patch; extrema make the displayed AA claim
+        // true for every pixel that this candidate contains.
+        final extremaIndex = y * (maxX + 1) + x;
+        final contrast = _evaluateContrast(
+          darkestBackground: extrema.minimum[extremaIndex],
+          brightestBackground: extrema.maximum[extremaIndex],
+        );
+        final passesAa = contrast.ratio >= ColorContrast.aaThreshold;
 
         final horizontalEdgeCount = (winW - 1) * winH;
         final verticalEdgeCount = winW * (winH - 1);
@@ -140,17 +166,20 @@ abstract final class TextPlacementService {
         );
 
         if (_isBetterCandidate(
+          passesAa: passesAa,
           score: score,
           aestheticScore: aestheticScore,
           x: x,
           y: y,
           bestScore: bestScore,
           bestAestheticScore: bestAestheticScore,
+          bestPassesAa: bestPassesAa,
           bestX: bestX,
           bestY: bestY,
         )) {
           bestScore = score;
           bestAestheticScore = aestheticScore;
+          bestPassesAa = passesAa;
           bestX = x;
           bestY = y;
           bestMean = mean;
@@ -177,68 +206,17 @@ abstract final class TextPlacementService {
     );
   }
 
-  /// Produces all stepped starts plus the exact preferred and far-edge starts.
-  /// Including [maxStart] guarantees that right/bottom-aligned regions are
-  /// considered even when the step does not divide the available space.
-  static List<int> _candidateStarts(
-    int maxStart,
-    int step,
-    int preferredStart,
-  ) {
-    final starts = <int>{0, preferredStart, maxStart};
-    for (var start = 0; start <= maxStart; start += step) {
-      starts.add(start);
-    }
-    return starts.toList()..sort();
-  }
-
-  /// Uses the 90th luminance percentile for white text and the 10th for black.
-  /// Those are the adverse tails for each color and avoid the false confidence
-  /// that a regional mean can create, while ignoring isolated compression noise.
-  static _ContrastEvaluation _evaluateContrast(
-    Float64List luminance,
-    int imageWidth,
-    int x,
-    int y,
-    int width,
-    int height,
-  ) {
-    const histogramSize = 256;
-    final histogram = Uint32List(histogramSize);
-    final bucketMinimum = Float64List(histogramSize)
-      ..fillRange(0, histogramSize, double.infinity);
-    final bucketMaximum = Float64List(histogramSize)
-      ..fillRange(0, histogramSize, -double.infinity);
-    for (var sampleY = y; sampleY < y + height; sampleY++) {
-      final rowOffset = sampleY * imageWidth;
-      for (var sampleX = x; sampleX < x + width; sampleX++) {
-        final value = luminance[rowOffset + sampleX];
-        final bucket = (value * (histogramSize - 1)).floor();
-        histogram[bucket]++;
-        bucketMinimum[bucket] = math.min(bucketMinimum[bucket], value);
-        bucketMaximum[bucket] = math.max(bucketMaximum[bucket], value);
-      }
-    }
-
-    final pixelCount = width * height;
-    final darkBackground = _percentileFromHistogram(
-      histogram,
-      bucketMinimum,
-      bucketMaximum,
-      pixelCount,
-      0.10,
-      useUpperBucketValue: false,
-    );
-    final brightBackground = _percentileFromHistogram(
-      histogram,
-      bucketMinimum,
-      bucketMaximum,
-      pixelCount,
-      0.90,
-      useUpperBucketValue: true,
-    );
-    final whiteRatio = ColorContrast.contrastRatio(1, brightBackground);
-    final blackRatio = ColorContrast.contrastRatio(darkBackground, 0);
+  /// Returns the stronger text color's worst contrast against this region.
+  ///
+  /// White text is weakest against the brightest pixel and black text is
+  /// weakest against the darkest pixel. Comparing those two minima produces a
+  /// conservative ratio that applies to every analyzed pixel in the region.
+  static _ContrastEvaluation _evaluateContrast({
+    required double darkestBackground,
+    required double brightestBackground,
+  }) {
+    final whiteRatio = ColorContrast.contrastRatio(1, brightestBackground);
+    final blackRatio = ColorContrast.contrastRatio(darkestBackground, 0);
     final useWhiteText = whiteRatio >= blackRatio;
     return _ContrastEvaluation(
       ratio: useWhiteText ? whiteRatio : blackRatio,
@@ -246,25 +224,109 @@ abstract final class TextPlacementService {
     );
   }
 
-  static double _percentileFromHistogram(
-    Uint32List histogram,
-    Float64List bucketMinimum,
-    Float64List bucketMaximum,
-    int count,
-    double percentile, {
-    required bool useUpperBucketValue,
+  /// Computes each window's minimum and maximum luminance with monotonic
+  /// deques: horizontal passes reduce rows to window-width extrema, then
+  /// vertical passes reduce those values to full 2D window extrema.
+  static _WindowExtrema _slidingWindowExtrema(
+    Float64List luminance, {
+    required int imageWidth,
+    required int imageHeight,
+    required int windowWidth,
+    required int windowHeight,
   }) {
-    final target = math.max(1, (count * percentile).ceil());
-    var seen = 0;
-    for (var bucket = 0; bucket < histogram.length; bucket++) {
-      seen += histogram[bucket];
-      if (seen >= target) {
-        return useUpperBucketValue
-            ? bucketMaximum[bucket]
-            : bucketMinimum[bucket];
+    final outputWidth = imageWidth - windowWidth + 1;
+    final outputHeight = imageHeight - windowHeight + 1;
+    final horizontalMinimum = Float64List(outputWidth * imageHeight);
+    final horizontalMaximum = Float64List(outputWidth * imageHeight);
+    final minimumDeque = Int32List(math.max(imageWidth, imageHeight));
+    final maximumDeque = Int32List(math.max(imageWidth, imageHeight));
+
+    for (var y = 0; y < imageHeight; y++) {
+      final inputRow = y * imageWidth;
+      final outputRow = y * outputWidth;
+      var minimumHead = 0;
+      var minimumTail = 0;
+      var maximumHead = 0;
+      var maximumTail = 0;
+
+      for (var x = 0; x < imageWidth; x++) {
+        final expired = x - windowWidth;
+        if (minimumHead < minimumTail && minimumDeque[minimumHead] <= expired) {
+          minimumHead++;
+        }
+        if (maximumHead < maximumTail && maximumDeque[maximumHead] <= expired) {
+          maximumHead++;
+        }
+
+        final value = luminance[inputRow + x];
+        while (minimumHead < minimumTail &&
+            luminance[inputRow + minimumDeque[minimumTail - 1]] >= value) {
+          minimumTail--;
+        }
+        while (maximumHead < maximumTail &&
+            luminance[inputRow + maximumDeque[maximumTail - 1]] <= value) {
+          maximumTail--;
+        }
+        minimumDeque[minimumTail++] = x;
+        maximumDeque[maximumTail++] = x;
+
+        if (x >= windowWidth - 1) {
+          final outputX = x - windowWidth + 1;
+          horizontalMinimum[outputRow + outputX] =
+              luminance[inputRow + minimumDeque[minimumHead]];
+          horizontalMaximum[outputRow + outputX] =
+              luminance[inputRow + maximumDeque[maximumHead]];
+        }
       }
     }
-    return 1;
+
+    final minimum = Float64List(outputWidth * outputHeight);
+    final maximum = Float64List(outputWidth * outputHeight);
+    for (var x = 0; x < outputWidth; x++) {
+      var minimumHead = 0;
+      var minimumTail = 0;
+      var maximumHead = 0;
+      var maximumTail = 0;
+
+      for (var y = 0; y < imageHeight; y++) {
+        final expired = y - windowHeight;
+        if (minimumHead < minimumTail && minimumDeque[minimumHead] <= expired) {
+          minimumHead++;
+        }
+        if (maximumHead < maximumTail && maximumDeque[maximumHead] <= expired) {
+          maximumHead++;
+        }
+
+        final valueIndex = y * outputWidth + x;
+        final minimumValue = horizontalMinimum[valueIndex];
+        final maximumValue = horizontalMaximum[valueIndex];
+        while (minimumHead < minimumTail &&
+            horizontalMinimum[
+                    minimumDeque[minimumTail - 1] * outputWidth + x] >=
+                minimumValue) {
+          minimumTail--;
+        }
+        while (maximumHead < maximumTail &&
+            horizontalMaximum[
+                    maximumDeque[maximumTail - 1] * outputWidth + x] <=
+                maximumValue) {
+          maximumTail--;
+        }
+        minimumDeque[minimumTail++] = y;
+        maximumDeque[maximumTail++] = y;
+
+        if (y >= windowHeight - 1) {
+          final outputY = y - windowHeight + 1;
+          final outputIndex = outputY * outputWidth + x;
+          minimum[outputIndex] =
+              horizontalMinimum[minimumDeque[minimumHead] * outputWidth + x];
+          maximum[outputIndex] =
+              horizontalMaximum[maximumDeque[maximumHead] * outputWidth + x];
+        }
+      }
+    }
+
+    return _WindowExtrema(minimum: minimum, maximum: maximum);
   }
 
   /// A lower-centre banner is the deliberate tie preference. A final explicit
@@ -285,15 +347,23 @@ abstract final class TextPlacementService {
   }
 
   static bool _isBetterCandidate({
+    required bool passesAa,
     required double score,
     required double aestheticScore,
     required int x,
     required int y,
     required double bestScore,
     required double bestAestheticScore,
+    required bool bestPassesAa,
     required int bestX,
     required int bestY,
   }) {
+    // Candidate comparison is lexicographic. WCAG AA compliance is the hard
+    // primary tier, so no failing region can outrank a passing one regardless
+    // of how calm it looks. The weighted contrast/uniformity/edge score is
+    // compared only within that tier, followed by the aesthetic tie-breakers.
+    if (passesAa != bestPassesAa) return passesAa;
+
     // Integral-image arithmetic can differ by a few ulps between otherwise
     // identical windows, so treat sub-millionth score changes as a real tie.
     const epsilon = 0.000001;
@@ -306,8 +376,12 @@ abstract final class TextPlacementService {
   }
 
   /// sRGB channel to linear-light conversion per WCAG 2.1.
-  static double linearChannel(num channel) {
-    final c = channel / 255;
+  static double linearChannel(num channel) =>
+      linearNormalizedChannel(channel / 255);
+
+  /// Normalized sRGB channel to linear-light conversion per WCAG 2.1.
+  static double linearNormalizedChannel(num channel) {
+    final c = channel.toDouble().clamp(0.0, 1.0);
     return c <= 0.03928
         ? c / 12.92
         : math.pow((c + 0.055) / 1.055, 2.4).toDouble();
@@ -315,9 +389,84 @@ abstract final class TextPlacementService {
 
   /// WCAG relative luminance from 0-255 sRGB channels.
   static double relativeLuminance(num r, num g, num b) =>
-      linearChannel(r) * 0.2126 +
-      linearChannel(g) * 0.7152 +
-      linearChannel(b) * 0.0722;
+      relativeLuminanceNormalized(r / 255, g / 255, b / 255);
+
+  /// WCAG relative luminance from normalized 0..1 sRGB channels.
+  static double relativeLuminanceNormalized(num r, num g, num b) =>
+      linearNormalizedChannel(r) * 0.2126 +
+      linearNormalizedChannel(g) * 0.7152 +
+      linearNormalizedChannel(b) * 0.0722;
+
+  /// WCAG relative luminance for an image-package pixel of any channel depth.
+  /// Non-palette grayscale pixels are expanded to RGB explicitly because the
+  /// package's normalized color accessors are inconsistent for one- and
+  /// two-channel pixel implementations. Palette pixels keep using their
+  /// palette-expanded accessors.
+  /// If [backdropColor] is supplied, source-over alpha compositing is applied
+  /// in normalized sRGB before the transfer function, matching how the viewer
+  /// paints the image over its opaque backdrop. Omitting it preserves the
+  /// original API behavior for callers analyzing raw RGB independently.
+  static double relativeLuminanceFromPixel(
+    img.Pixel pixel, {
+    Color? backdropColor,
+  }) {
+    _NormalizedBackdrop? backdrop;
+    if (backdropColor != null) {
+      _validateOpaqueBackdrop(backdropColor);
+      backdrop = _NormalizedBackdrop.fromColor(backdropColor);
+    }
+    return _relativeLuminanceFromPixel(pixel, backdrop: backdrop);
+  }
+
+  static double _relativeLuminanceFromPixel(
+    img.Pixel pixel, {
+    _NormalizedBackdrop? backdrop,
+  }) {
+    late double r;
+    late double g;
+    late double b;
+    var alpha = 1.0;
+
+    if (!pixel.hasPalette && (pixel.length == 1 || pixel.length == 2)) {
+      final gray = _normalizedPixelChannel(pixel[0], pixel.maxChannelValue);
+      r = gray;
+      g = gray;
+      b = gray;
+      if (pixel.length == 2) {
+        alpha = _normalizedPixelChannel(pixel[1], pixel.maxChannelValue);
+      }
+    } else {
+      // Palette accessors expand the stored index through the palette. They
+      // are also reliable for ordinary RGB/RGBA pixels.
+      r = pixel.rNormalized.toDouble().clamp(0.0, 1.0);
+      g = pixel.gNormalized.toDouble().clamp(0.0, 1.0);
+      b = pixel.bNormalized.toDouble().clamp(0.0, 1.0);
+      if (pixel.length == 2 || pixel.length == 4) {
+        alpha = pixel.aNormalized.toDouble().clamp(0.0, 1.0);
+      }
+    }
+
+    if (backdrop != null) {
+      final inverseAlpha = 1 - alpha;
+      r = r * alpha + backdrop.r * inverseAlpha;
+      g = g * alpha + backdrop.g * inverseAlpha;
+      b = b * alpha + backdrop.b * inverseAlpha;
+    }
+    return relativeLuminanceNormalized(r, g, b);
+  }
+
+  static double _normalizedPixelChannel(num channel, num maxChannelValue) =>
+      (channel / maxChannelValue).clamp(0.0, 1.0);
+
+  static void _validateOpaqueBackdrop(Color backdropColor) {
+    if ((backdropColor.toARGB32() >>> 24) != 0xff) {
+      throw ArgumentError.value(
+        backdropColor,
+        'backdropColor',
+        'must be fully opaque so analysis matches rendering',
+      );
+    }
+  }
 }
 
 class _ContrastEvaluation {
@@ -325,4 +474,32 @@ class _ContrastEvaluation {
 
   final double ratio;
   final bool useWhiteText;
+}
+
+class _WindowExtrema {
+  const _WindowExtrema({required this.minimum, required this.maximum});
+
+  final Float64List minimum;
+  final Float64List maximum;
+}
+
+class _NormalizedBackdrop {
+  const _NormalizedBackdrop({
+    required this.r,
+    required this.g,
+    required this.b,
+  });
+
+  factory _NormalizedBackdrop.fromColor(Color color) {
+    final argb = color.toARGB32();
+    return _NormalizedBackdrop(
+      r: ((argb >> 16) & 0xff) / 255,
+      g: ((argb >> 8) & 0xff) / 255,
+      b: (argb & 0xff) / 255,
+    );
+  }
+
+  final double r;
+  final double g;
+  final double b;
 }

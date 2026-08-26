@@ -10,6 +10,10 @@ abstract final class AppTheme {
   /// Page background base.
   static const Color background = Color(0xFF0B0E15);
 
+  /// Opaque surface shown through transparent image pixels. Image analysis
+  /// composites against this exact color before measuring luminance.
+  static const Color imageBackdrop = background;
+
   /// Card / panel surface.
   static const Color surface = Color(0xFF12161F);
 

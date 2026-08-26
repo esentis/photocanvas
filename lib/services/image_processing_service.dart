@@ -211,9 +211,13 @@ class ImageProcessingService {
   /// text plus the average perceived brightness of the image.
   static AccessibilityReport analyzeAccessibility(
     Uint8List imageData,
-    List<Color> colors,
-  ) {
-    final luminance = _averageLuminance(imageData);
+    List<Color> colors, {
+    required Color backdropColor,
+  }) {
+    final luminance = _averageLuminance(
+      imageData,
+      backdropColor: backdropColor,
+    );
     final contrasts = colors.map((color) {
       final colorLuminance = color.computeLuminance();
       return ColorContrast(
@@ -231,14 +235,19 @@ class ImageProcessingService {
 
   /// Mean relative luminance across all pixels of the display-sized image.
   /// Runs on the already-resized bytes, keeping the loop cheap.
-  static double _averageLuminance(Uint8List imageData) {
+  static double _averageLuminance(
+    Uint8List imageData, {
+    required Color backdropColor,
+  }) {
     final image = img.decodeImage(imageData);
     if (image == null || image.width == 0 || image.height == 0) return 0;
 
     var total = 0.0;
     for (final pixel in image.data!) {
-      total +=
-          TextPlacementService.relativeLuminance(pixel.r, pixel.g, pixel.b);
+      total += TextPlacementService.relativeLuminanceFromPixel(
+        pixel,
+        backdropColor: backdropColor,
+      );
     }
     return total / (image.width * image.height);
   }
