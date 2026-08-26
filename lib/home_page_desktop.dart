@@ -3,21 +3,21 @@
 
 import 'dart:async';
 import 'dart:html' as html;
-import 'dart:ui';
 
-import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:image_pixels_plus/image_pixels_plus.dart';
 import 'package:photocanvas/constants.dart';
-import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/helper/ui_helper.dart';
 import 'package:photocanvas/models/home_page_state.dart';
 import 'package:photocanvas/services/image_processing_service.dart';
+import 'package:photocanvas/services/text_placement_service.dart';
 import 'package:photocanvas/theme/app_theme.dart';
 import 'package:photocanvas/widgets/color_info_section.dart';
 import 'package:photocanvas/widgets/color_palette_dialog.dart';
+import 'package:photocanvas/widgets/common/app_background.dart';
+import 'package:photocanvas/widgets/common/app_button.dart';
+import 'package:photocanvas/widgets/common/app_header.dart';
 import 'package:photocanvas/widgets/image_drop_zone.dart';
 import 'package:photocanvas/widgets/image_info_section.dart';
 import 'package:photocanvas/widgets/interactive_image_viewer.dart';
@@ -134,6 +134,8 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
           containerColor: Colors.white,
           containerText: 'Drop your image here',
           accessibilityReport: accessibilityReport,
+          textPlacement: TextPlacementService.analyze(imageData),
+          showTextZone: false,
         ),
       );
     } on ImageProcessingException catch (e) {
@@ -148,34 +150,40 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
     final route = DialogRoute<void>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.background,
+      barrierColor: Colors.black.withValues(alpha: 0.6),
+      builder: (context) => Dialog(
+        backgroundColor: AppTheme.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+          side: const BorderSide(color: AppTheme.stroke),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 7,
-                sigmaY: 7,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(26),
-                child: ClayText(
-                  'Analyzing your image',
-                  style: AppTheme.titleMedium,
-                  color: AppTheme.text,
-                  parentColor: AppTheme.background,
-                  spread: 2,
-                  depth: -25,
-                  textColor: AppTheme.text,
-                  emboss: true,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.space8,
+            vertical: AppTheme.space6,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(
+                width: 34,
+                height: 34,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  strokeCap: StrokeCap.round,
+                  color: AppTheme.primaryStrong,
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: AppTheme.space4),
+              Text('Analyzing your image', style: AppTheme.titleSmall),
+              const SizedBox(height: 2),
+              Text(
+                'Extracting colors and insights…',
+                style:
+                    AppTheme.bodySmall.copyWith(color: AppTheme.textSecondary),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -195,47 +203,33 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: _buildAppBar(),
-      body: _buildBody(),
+    // The background wraps the whole scaffold so the header area is
+    // never left on the raw browser canvas.
+    return AppBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: _buildAppBar(),
+        body: _buildBody(),
+      ),
     );
   }
 
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppTheme.background,
-      centerTitle: true,
-      toolbarHeight: 100,
-      shadowColor: const Color(0xff3C4048),
-      elevation: 0,
+    return AppHeader(
+      title: PhotocanvasTitle(title: widget.title),
       actions: [
-        if (_state.hasImage) _buildPaletteButton(),
-      ],
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          PhotocanvasTitle(title: widget.title),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaletteButton() {
-    return GestureDetector(
-      onTap: _showColorPalette,
-      child: Padding(
-        padding: const EdgeInsets.only(right: 14),
-        child: MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: SvgPicture.asset(
-            Assets.palette,
-            height: 60,
-            width: 60,
+        if (_state.hasImage)
+          AppButton(
+            label: 'Palette',
+            icon: Icons.palette_outlined,
+            onTap: _showColorPalette,
           ),
+        HeaderIconButton(
+          icon: Icons.code_rounded,
+          tooltip: 'GitHub',
+          onTap: () => launchLink(kGithubLink),
         ),
-      ),
+      ],
     );
   }
 
@@ -250,85 +244,124 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
   }
 
   Widget _buildBody() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        if (!_state.hasImage) const SizedBox(height: 20),
-        if (!_state.hasImage) _buildDropZone(),
-        if (_state.hasImage) _buildImageSection(),
-      ],
+    if (!_state.hasImage) return _buildDropZone();
+
+    final imageData = _state.imageData;
+    if (imageData == null) return const SizedBox.shrink();
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.space6,
+          vertical: AppTheme.space2,
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1240),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Invisible pixel source powering hover color lookups.
+                ImagePixelsPlus(
+                  imageProvider: MemoryImage(imageData),
+                  builder: (_, img) {
+                    // Keep the pixel buffer reachable for hover lookups
+                    // without participating in the rebuild cycle.
+                    _imgDetails = img;
+                    return const SizedBox.shrink();
+                  },
+                ),
+                ColorInfoSection(
+                  paletteGenerator: _state.paletteGenerator,
+                  hoveredColor: _hoveredColor,
+                  copiedColor: _state.copiedColor,
+                ),
+                const SizedBox(height: AppTheme.space5),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final wide =
+                        constraints.maxWidth >= AppTheme.wideLayoutBreakpoint;
+                    final viewer = InteractiveImageViewer(
+                      imageData: imageData,
+                      onDrop: (files) async {
+                        if (files != null && files.isNotEmpty) {
+                          await _onDrop(files);
+                        }
+                      },
+                      onPointerHover: _handlePointerHover,
+                      onPointerDown: (pointer) => _handleColorCopy(),
+                      onMouseExit: _handleMouseExit,
+                      pointerLocalPos: _pointerLocalPos,
+                      onClearImage: _clearImage,
+                      textPlacementSuggestion: _state.textPlacement,
+                      showTextZone: _state.showTextZone,
+                      onToggleTextZone: _toggleTextZone,
+                    );
+                    final analysis = _state.imageAnalysis;
+                    final info = analysis == null
+                        ? null
+                        : ImageInfoSection(
+                            analysis: analysis,
+                            report: _state.accessibilityReport,
+                          );
+
+                    if (!wide || info == null) {
+                      return Column(
+                        children: [
+                          viewer,
+                          if (info != null) ...[
+                            const SizedBox(height: AppTheme.space5),
+                            info,
+                          ],
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: viewer),
+                        const SizedBox(width: AppTheme.space6),
+                        SizedBox(width: 384, child: info),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: AppTheme.space8),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildDropZone() {
     return Center(
-      child: ImageDropZone(
-        containerColor: _state.containerColor,
-        containerText: _state.containerText,
-        onDragEnter: () => _updateState(
-          _state.copyWith(
-            containerColor: AppTheme.success,
-            containerText: 'Ready to drop',
-          ),
-        ),
-        onDragExit: () => _updateState(
-          _state.copyWith(
-            containerColor: Colors.white,
-            containerText: 'Drop your image here',
-          ),
-        ),
-        onDrop: (files) async {
-          if (files != null && files.isNotEmpty) {
-            await _onDrop(files.cast<html.File>());
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildImageSection() {
-    final imageData = _state.imageData;
-    if (imageData == null) return const SizedBox.shrink();
-
-    return Column(
-      children: [
-        Stack(
-          children: [
-            ImagePixelsPlus(
-              imageProvider: MemoryImage(imageData),
-              builder: (_, img) {
-                // Keep the pixel buffer reachable for hover lookups without
-                // participating in the rebuild cycle.
-                _imgDetails = img;
-                return const SizedBox.shrink();
-              },
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppTheme.space5),
+        child: ImageDropZone(
+          containerColor: _state.containerColor,
+          containerText: _state.containerText,
+          onDragEnter: () => _updateState(
+            _state.copyWith(
+              containerColor: AppTheme.success,
+              containerText: 'Ready to drop',
             ),
-            ColorInfoSection(
-              paletteGenerator: _state.paletteGenerator,
-              hoveredColor: _hoveredColor,
-              copiedColor: _state.copiedColor,
+          ),
+          onDragExit: () => _updateState(
+            _state.copyWith(
+              containerColor: Colors.white,
+              containerText: 'Drop your image here',
             ),
-          ],
-        ),
-        InteractiveImageViewer(
-          imageData: imageData,
+          ),
           onDrop: (files) async {
             if (files != null && files.isNotEmpty) {
-              await _onDrop(files);
+              await _onDrop(files.cast<html.File>());
             }
           },
-          onPointerHover: _handlePointerHover,
-          onPointerDown: (pointer) => _handleColorCopy(),
-          onMouseExit: _handleMouseExit,
-          pointerLocalPos: _pointerLocalPos,
-          onClearImage: _clearImage,
         ),
-        if (_state.imageAnalysis != null)
-          ImageInfoSection(
-            analysis: _state.imageAnalysis!,
-            report: _state.accessibilityReport,
-          ),
-      ],
+      ),
     );
   }
 
@@ -366,6 +399,10 @@ class _HomePageDesktopState extends State<HomePageDesktop> {
     _hoveredColor.value = null;
     _pointerLocalPos.value = null;
     _updateState(_state.clearImage());
+  }
+
+  void _toggleTextZone() {
+    _updateState(_state.copyWith(showTextZone: !_state.showTextZone));
   }
 
   Future<void> _handleColorCopy() async {

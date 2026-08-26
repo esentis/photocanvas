@@ -1,5 +1,7 @@
+// Too strict
+// ignore_for_file: deprecated_member_use
+
 import 'dart:html' as html;
-import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -10,6 +12,7 @@ import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/models/accessibility_report.dart';
 import 'package:photocanvas/models/image_analysis.dart';
+import 'package:photocanvas/services/text_placement_service.dart';
 
 class ImageProcessingException implements Exception {
   const ImageProcessingException(this.message);
@@ -70,7 +73,8 @@ class ImageProcessingService {
         bytes[11] == 0x50) {
       return 'WEBP';
     }
-    if (bytes.length >= 12 && String.fromCharCodes(bytes.sublist(4, 8)) == 'ftyp') {
+    if (bytes.length >= 12 &&
+        String.fromCharCodes(bytes.sublist(4, 8)) == 'ftyp') {
       return 'AVIF';
     }
     final extension = fileName.split('.').last.toUpperCase();
@@ -214,8 +218,8 @@ class ImageProcessingService {
       final colorLuminance = color.computeLuminance();
       return ColorContrast(
         color: color,
-        contrastWithWhite: _contrastRatio(colorLuminance, 1),
-        contrastWithBlack: _contrastRatio(colorLuminance, 0),
+        contrastWithWhite: ColorContrast.contrastRatio(colorLuminance, 1),
+        contrastWithBlack: ColorContrast.contrastRatio(colorLuminance, 0),
       );
     }).toList();
 
@@ -223,14 +227,6 @@ class ImageProcessingService {
       averageLuminance: luminance,
       colorContrasts: contrasts,
     );
-  }
-
-  /// WCAG contrast ratio between two relative luminances; either may be the
-  /// lighter one so callers pass them in any order.
-  static double _contrastRatio(double a, double b) {
-    final lighter = a > b ? a : b;
-    final darker = a > b ? b : a;
-    return (lighter + 0.05) / (darker + 0.05);
   }
 
   /// Mean relative luminance across all pixels of the display-sized image.
@@ -241,16 +237,9 @@ class ImageProcessingService {
 
     var total = 0.0;
     for (final pixel in image.data!) {
-      total += _linearChannel(pixel.r) * 0.2126 +
-          _linearChannel(pixel.g) * 0.7152 +
-          _linearChannel(pixel.b) * 0.0722;
+      total +=
+          TextPlacementService.relativeLuminance(pixel.r, pixel.g, pixel.b);
     }
     return total / (image.width * image.height);
-  }
-
-  /// sRGB channel to linear-light conversion per WCAG 2.1.
-  static double _linearChannel(num channel) {
-    final c = channel / 255;
-    return c <= 0.03928 ? c / 12.92 : math.pow((c + 0.055) / 1.055, 2.4).toDouble();
   }
 }

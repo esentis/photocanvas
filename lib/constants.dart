@@ -1,33 +1,11 @@
 // Too strict
 // ignore_for_file: only_throw_errors
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:photocanvas/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 Logger kLog = Logger();
-
-// Legacy color constants - use AppTheme instead
-@Deprecated('Use AppTheme.appBar instead')
-Color kColorAppBar = AppTheme.appBar;
-
-@Deprecated('Use AppTheme.background instead')
-Color kColorBackground = AppTheme.background;
-
-@Deprecated('Use AppTheme.text instead')
-Color kColorText = AppTheme.text;
-
-@Deprecated('Use AppTheme.textFieldBorder instead')
-Color kColorTextFieldBorder = AppTheme.textFieldBorder;
-
-@Deprecated('Use AppTheme.success instead')
-Color kColorSuccess = AppTheme.success;
-
-@Deprecated('Use AppTheme.defaultStyle instead')
-TextStyle kStyle = AppTheme.defaultStyle;
 
 /// Returns the hex code of the color in standard `#RRGGBB` format.
 String kColorToHexString(Color color) =>
@@ -41,39 +19,6 @@ Future<void> launchLink(String url) async {
   } else {
     throw 'Could not launch $url';
   }
-}
-
-@Deprecated('Use UiHelper.showCopySnackBar instead')
-ScaffoldFeatureController<SnackBar, SnackBarClosedReason> kShowCopySnackBar(
-  BuildContext context,
-  Color color,
-) {
-  return ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      backgroundColor: color,
-      content: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 7,
-            sigmaY: 7,
-          ),
-          child: ColoredBox(
-            color: color.withValues(alpha: 0.8),
-            child: Center(
-              child: Text(
-                '${kColorToHexString(color)}\ncopied to clipboard!',
-                style: kStyle.copyWith(
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
 }
 
 List<String> comingSoonMessages = [

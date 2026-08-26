@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:photocanvas/models/accessibility_report.dart';
 import 'package:photocanvas/models/image_analysis.dart';
+import 'package:photocanvas/models/text_placement.dart';
 
 // Sentinel object for copyWith method
 const Object _sentinel = Object();
@@ -21,6 +22,8 @@ class HomePageState {
     this.copiedColor,
     this.imageAnalysis,
     this.accessibilityReport,
+    this.textPlacement,
+    this.showTextZone = false,
   });
 
   final Color containerColor;
@@ -37,6 +40,12 @@ class HomePageState {
   final ImageAnalysis? imageAnalysis;
   final AccessibilityReport? accessibilityReport;
 
+  /// Most readable rectangle for overlay text on the current image.
+  final TextPlacementSuggestion? textPlacement;
+
+  /// Whether the text-placement zone is currently drawn over the image.
+  final bool showTextZone;
+
   HomePageState copyWith({
     Color? containerColor,
     String? containerText,
@@ -49,6 +58,8 @@ class HomePageState {
     Object? copiedColor = _sentinel,
     Object? imageAnalysis = _sentinel,
     Object? accessibilityReport = _sentinel,
+    Object? textPlacement = _sentinel,
+    bool? showTextZone,
   }) {
     return HomePageState(
       containerColor: containerColor ?? this.containerColor,
@@ -70,6 +81,10 @@ class HomePageState {
       accessibilityReport: accessibilityReport == _sentinel
           ? this.accessibilityReport
           : accessibilityReport as AccessibilityReport?,
+      textPlacement: textPlacement == _sentinel
+          ? this.textPlacement
+          : textPlacement as TextPlacementSuggestion?,
+      showTextZone: showTextZone ?? this.showTextZone,
     );
   }
 
@@ -84,6 +99,8 @@ class HomePageState {
       containerText: 'Drop your image here',
       imageAnalysis: null,
       accessibilityReport: null,
+      textPlacement: null,
+      showTextZone: false,
     );
   }
 
@@ -111,7 +128,9 @@ class HomePageState {
         other.pinnedDetailedColors == pinnedDetailedColors &&
         other.copiedColor == copiedColor &&
         other.imageAnalysis == imageAnalysis &&
-        other.accessibilityReport == accessibilityReport;
+        other.accessibilityReport == accessibilityReport &&
+        other.textPlacement == textPlacement &&
+        other.showTextZone == showTextZone;
   }
 
   @override
@@ -128,6 +147,8 @@ class HomePageState {
       copiedColor,
       imageAnalysis,
       accessibilityReport,
+      textPlacement,
+      showTextZone,
     ]);
   }
 }

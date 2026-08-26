@@ -134,12 +134,20 @@ class _LensPainter extends CustomPainter {
         Paint()..filterQuality = FilterQuality.high,
       )
       ..restore()
+      // Outer dark ring keeps the lens visible on any background.
+      ..drawPath(
+        lensShape,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = borderWidth + 2
+          ..color = Colors.black.withValues(alpha: 0.45),
+      )
       ..drawPath(
         lensShape,
         Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = borderWidth
-          ..color = AppTheme.appBar,
+          ..color = AppTheme.primaryStrong,
       );
 
     _drawCrosshair(canvas, position);
@@ -149,7 +157,14 @@ class _LensPainter extends CustomPainter {
     final textPainter = TextPainter(
       text: TextSpan(
         text: '+',
-        style: AppTheme.defaultStyle.copyWith(color: Colors.white),
+        style: AppTheme.mono.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+          shadows: const [
+            Shadow(color: Colors.black54, blurRadius: 4),
+          ],
+        ),
       ),
       textDirection: TextDirection.ltr,
     )..layout();

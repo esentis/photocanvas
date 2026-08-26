@@ -39,7 +39,6 @@ dependencies:
   package_info_plus: ^10.1.0
   flutter_svg: ^2.0.11
   responsive_builder: ^0.7.1
-  clay_containers: ^0.3.4
 
 dev_dependencies:
   flutter_test:
@@ -67,25 +66,8 @@ flutter:
   assets:
     - assets/
 
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware.
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  fonts:
-    - family: Dongle
-      fonts:
-        - asset: fonts/Dongle-Regular.ttf
-        - asset: fonts/Dongle-Light.ttf
-          weight: 100
-        - asset: fonts/Dongle-Bold.ttf
-          weight: 700
+  # Typography is served via web fonts (see web/index.html): Inter for UI
+  # text and JetBrains Mono for hex codes, with system fallbacks.
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

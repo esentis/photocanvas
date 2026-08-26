@@ -1,12 +1,13 @@
-import 'package:clay_containers/clay_containers.dart';
 import 'package:flutter/material.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/models/accessibility_report.dart';
 import 'package:photocanvas/models/image_analysis.dart';
 import 'package:photocanvas/theme/app_theme.dart';
+import 'package:photocanvas/widgets/common/app_card.dart';
+import 'package:photocanvas/widgets/common/status_badge.dart';
 
-/// Displays file metadata of the dropped image plus WCAG accessibility
-/// insights derived from its palette and average brightness.
+/// File metadata of the dropped image plus WCAG accessibility insights
+/// derived from its palette and average brightness.
 class ImageInfoSection extends StatelessWidget {
   const ImageInfoSection({
     required this.analysis,
@@ -19,37 +20,15 @@ class ImageInfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40),
-      child: Wrap(
-        spacing: 60,
-        runSpacing: 30,
-        alignment: WrapAlignment.center,
-        children: [
-          _ImageInfoCard(analysis: analysis),
-          if (report != null) _AccessibilityCard(report: report!),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _ImageInfoCard(analysis: analysis),
+        if (report != null) ...[
+          const SizedBox(height: AppTheme.space4),
+          _AccessibilityCard(report: report!),
         ],
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader(this.title);
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClayText(
-      title,
-      style: AppTheme.bodyMedium,
-      color: AppTheme.text,
-      parentColor: AppTheme.background,
-      spread: AppTheme.defaultSpread,
-      depth: AppTheme.defaultDepth.toInt(),
-      textColor: AppTheme.text,
-      emboss: true,
+      ],
     );
   }
 }
@@ -61,33 +40,50 @@ class _ImageInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const _SectionHeader('Image information'),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 28,
-          runSpacing: 14,
-          children: [
-            _InfoStat(label: 'File', value: analysis.fileName),
-            _InfoStat(label: 'Format', value: analysis.format),
-            _InfoStat(label: 'Size', value: analysis.formattedFileSize),
-            _InfoStat(label: 'Dimensions', value: analysis.resolution),
-            _InfoStat(
-              label: 'Megapixels',
-              value: analysis.megapixels.toStringAsFixed(2),
-            ),
-            _InfoStat(label: 'Aspect ratio', value: analysis.aspectRatio),
-            _InfoStat(label: 'Orientation', value: analysis.orientation),
-            if (analysis.isLowResolution)
-              const _WarningStat(
-                message: 'Low resolution — may blur when zoomed',
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SectionHeader('Image information', icon: Icons.image_outlined),
+          const SizedBox(height: AppTheme.space3),
+          Wrap(
+            spacing: AppTheme.space5,
+            runSpacing: AppTheme.space3,
+            children: [
+              StatTile(label: 'File', value: analysis.fileName),
+              StatTile(label: 'Format', value: analysis.format, mono: true),
+              StatTile(
+                label: 'Size',
+                value: analysis.formattedFileSize,
+                mono: true,
               ),
+              StatTile(
+                label: 'Dimensions',
+                value: analysis.resolution,
+                mono: true,
+              ),
+              StatTile(
+                label: 'Megapixels',
+                value: analysis.megapixels.toStringAsFixed(2),
+                mono: true,
+              ),
+              StatTile(
+                label: 'Aspect ratio',
+                value: analysis.aspectRatio,
+                mono: true,
+              ),
+              StatTile(label: 'Orientation', value: analysis.orientation),
+            ],
+          ),
+          if (analysis.isLowResolution) ...[
+            const SizedBox(height: AppTheme.space3),
+            const WarningBadge(
+              message: 'Low resolution — may blur when zoomed',
+            ),
           ],
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -99,34 +95,176 @@ class _AccessibilityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const _SectionHeader('Accessibility'),
-        const SizedBox(height: 12),
-        Text(
-          report.textRecommendation,
-          style: AppTheme.bodySmall.copyWith(color: AppTheme.text),
-        ),
-        Text(
-          'Average brightness: ${(report.averageLuminance * 100).round()}%',
-          style: AppTheme.bodySmall.copyWith(color: AppTheme.text),
-        ),
-        const SizedBox(height: 10),
-        if (report.colorContrasts.isEmpty)
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SectionHeader(
+            'Accessibility',
+            icon: Icons.accessibility_new_rounded,
+          ),
+          const SizedBox(height: AppTheme.space2),
+          Text(report.textRecommendation, style: AppTheme.bodyMedium),
+          const SizedBox(height: AppTheme.space3),
+          _RecommendedOverlay(report: report),
+          const SizedBox(height: AppTheme.space2),
+          Row(
+            children: [
+              Flexible(
+                child: Text(
+                  'Average brightness',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.bodySmall,
+                ),
+              ),
+              const SizedBox(width: AppTheme.space2),
+              Expanded(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: report.averageLuminance),
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, value, _) => ClipRRect(
+                    borderRadius: BorderRadius.circular(99),
+                    child: LinearProgressIndicator(
+                      value: value,
+                      minHeight: 6,
+                      backgroundColor: AppTheme.surfaceAlt,
+                      valueColor: const AlwaysStoppedAnimation(
+                        AppTheme.warning,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppTheme.space2),
+              Text(
+                '${(report.averageLuminance * 100).round()}%',
+                style: AppTheme.mono.copyWith(color: AppTheme.text),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppTheme.space3),
+          if (report.colorContrasts.isEmpty)
+            Text(
+              'No palette colors to evaluate',
+              style: AppTheme.bodySmall.copyWith(fontStyle: FontStyle.italic),
+            )
+          else
+            Container(
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceAlt.withValues(alpha: 0.55),
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                border: Border.all(color: AppTheme.stroke),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: AppTheme.space3),
+              child: Column(
+                children: [
+                  for (final (index, contrast)
+                      in report.colorContrasts.indexed) ...[
+                    if (index > 0)
+                      const Divider(height: 1, color: AppTheme.stroke),
+                    _ContrastRow(contrast),
+                  ],
+                ],
+              ),
+            ),
+          const SizedBox(height: AppTheme.space2),
           Text(
-            'No palette colors to evaluate',
-            style: AppTheme.bodySmall.copyWith(color: AppTheme.text),
-          )
-        else
-          ...report.colorContrasts.map(_ContrastRow.new),
-        const SizedBox(height: 6),
-        Text(
-          'WCAG AA needs 4.5:1 · AAA needs 7:1 (vs white / black text)',
-          style: AppTheme.bodySmall.copyWith(color: AppTheme.text),
+            'WCAG AA needs 4.5:1 · AAA needs 7:1 (vs white / black text)',
+            style: AppTheme.bodySmall.copyWith(color: AppTheme.textMuted),
+          ),
+          if (report.colorContrasts.isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(
+              'White text meets AA on '
+              '${(report.aaWhiteTextCoverage * 100).round()}% of palette colors.',
+              style: AppTheme.bodySmall.copyWith(color: AppTheme.textMuted),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Highlighted verdict: which standard text color reads best over this
+/// image, with the achieved ratio and WCAG badges.
+class _RecommendedOverlay extends StatelessWidget {
+  const _RecommendedOverlay({required this.report});
+
+  final AccessibilityReport report;
+
+  @override
+  Widget build(BuildContext context) {
+    final isWhite = report.recommendsWhiteText;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.space3,
+        vertical: AppTheme.space2 + 2,
+      ),
+      decoration: BoxDecoration(
+        color: AppTheme.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(
+          color: AppTheme.primary.withValues(alpha: 0.35),
         ),
-      ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: isWhite ? Colors.white : Colors.black,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppTheme.strokeStrong, width: 1.5),
+            ),
+          ),
+          const SizedBox(width: AppTheme.space2),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'RECOMMENDED OVERLAY TEXT',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.label.copyWith(fontSize: 10),
+                ),
+                const SizedBox(height: 1),
+                RichText(
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  text: TextSpan(
+                    style: AppTheme.titleSmall,
+                    children: [
+                      TextSpan(text: isWhite ? 'White' : 'Black'),
+                      TextSpan(
+                        text:
+                            ' · ${report.recommendedTextRatio.toStringAsFixed(1)}:1',
+                        style: AppTheme.mono.copyWith(
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Wrap(
+            spacing: 4,
+            runSpacing: 2,
+            children: [
+              StatusBadge(passed: report.recommendedPassesAa, label: 'AA'),
+              StatusBadge(passed: report.recommendedPassesAaa, label: 'AAA'),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -139,39 +277,49 @@ class _ContrastRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.symmetric(vertical: AppTheme.space2),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 26,
-            height: 26,
+            width: 20,
+            height: 20,
             decoration: BoxDecoration(
               color: contrast.color,
               shape: BoxShape.circle,
-              border: Border.all(color: AppTheme.text, width: 1.5),
+              border: Border.all(color: AppTheme.strokeStrong, width: 1.5),
             ),
           ),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 78,
+          const SizedBox(width: AppTheme.space2),
+          Expanded(
+            flex: 2,
             child: Text(
               kColorToHexString(contrast.color),
-              style: AppTheme.bodySmall.copyWith(color: AppTheme.text),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTheme.mono.copyWith(fontSize: 12.5),
             ),
           ),
-          _ContrastGroup(
-            label: 'White',
-            ratio: contrast.contrastWithWhite,
-            passesAa: contrast.passesAaWithWhite(),
-            passesAaa: contrast.passesAaaWithWhite(),
+          const SizedBox(width: AppTheme.space2),
+          Expanded(
+            flex: 3,
+            child: _ContrastGroup(
+              label: 'White',
+              ratio: contrast.contrastWithWhite,
+              passesAa: contrast.passesAaWithWhite(),
+              passesAaa: contrast.passesAaaWithWhite(),
+              recommended: contrast.prefersWhiteText,
+            ),
           ),
-          const SizedBox(width: 18),
-          _ContrastGroup(
-            label: 'Black',
-            ratio: contrast.contrastWithBlack,
-            passesAa: contrast.passesAaWithBlack(),
-            passesAaa: contrast.passesAaaWithBlack(),
+          const SizedBox(width: AppTheme.space1),
+          Expanded(
+            flex: 3,
+            child: _ContrastGroup(
+              label: 'Black',
+              ratio: contrast.contrastWithBlack,
+              passesAa: contrast.passesAaWithBlack(),
+              passesAaa: contrast.passesAaaWithBlack(),
+              recommended: !contrast.prefersWhiteText,
+            ),
           ),
         ],
       ),
@@ -185,6 +333,7 @@ class _ContrastGroup extends StatelessWidget {
     required this.ratio,
     required this.passesAa,
     required this.passesAaa,
+    required this.recommended,
   });
 
   final String label;
@@ -192,115 +341,43 @@ class _ContrastGroup extends StatelessWidget {
   final bool passesAa;
   final bool passesAaa;
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '$label ${ratio.toStringAsFixed(1)}:1',
-          style: AppTheme.defaultStyle.copyWith(
-            fontSize: 16,
-            height: 1,
-            color: AppTheme.text.withValues(alpha: 0.55),
-          ),
-        ),
-        const SizedBox(height: 2),
-        Row(
-          children: [
-            _PassBadge(passed: passesAa, label: 'AA'),
-            const SizedBox(width: 4),
-            _PassBadge(passed: passesAaa, label: 'AAA'),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _PassBadge extends StatelessWidget {
-  const _PassBadge({required this.passed, required this.label});
-
-  final bool passed;
-  final String label;
+  /// Whether white/black (this column) is the stronger choice for this
+  /// color; rendered with a subtle tinted pill to steer the eye.
+  final bool recommended;
 
   @override
   Widget build(BuildContext context) {
-    final color = passed ? AppTheme.success : AppTheme.error;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color, width: 1.5),
+        color: recommended ? AppTheme.primary.withValues(alpha: 0.10) : null,
+        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
       ),
-      child: Text(
-        passed ? label : '$label ✕',
-        style: AppTheme.defaultStyle.copyWith(fontSize: 14, height: 1, color: color),
-      ),
-    );
-  }
-}
-
-class _InfoStat extends StatelessWidget {
-  const _InfoStat({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: AppTheme.defaultStyle.copyWith(
-            fontSize: 16,
-            height: 1,
-            letterSpacing: 1.5,
-            color: AppTheme.text.withValues(alpha: 0.55),
-          ),
-        ),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 220),
-          child: Text(
-            value,
-            overflow: TextOverflow.ellipsis,
-            style: AppTheme.bodyMedium.copyWith(color: AppTheme.text),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _WarningStat extends StatelessWidget {
-  const _WarningStat({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.error, width: 1.5),
-      ),
-      child: Row(
+      // Wrap-based layout so narrow sidebars degrade gracefully instead of
+      // overflowing.
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.warning_amber_rounded, size: 18, color: AppTheme.error),
-          const SizedBox(width: 6),
           Text(
-            message,
-            style: AppTheme.defaultStyle.copyWith(
-              fontSize: 18,
-              height: 1,
-              color: AppTheme.error,
+            '$label ${ratio.toStringAsFixed(1)}:1',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTheme.bodySmall.copyWith(
+              fontSize: 12,
+              fontWeight: recommended ? FontWeight.w700 : FontWeight.w400,
+              color: recommended ? AppTheme.text : AppTheme.textSecondary,
             ),
+          ),
+          const SizedBox(height: 2),
+          Wrap(
+            spacing: 4,
+            runSpacing: 2,
+            children: [
+              StatusBadge(passed: passesAa, label: 'AA'),
+              StatusBadge(passed: passesAaa, label: 'AAA'),
+            ],
           ),
         ],
       ),

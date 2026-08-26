@@ -1,13 +1,16 @@
 import 'dart:math';
 
-import 'package:clay_containers/widgets/clay_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:photocanvas/constants.dart';
 import 'package:photocanvas/helper/assets.dart';
 import 'package:photocanvas/theme/app_theme.dart';
+import 'package:photocanvas/widgets/common/app_background.dart';
+import 'package:photocanvas/widgets/common/app_header.dart';
 import 'package:photocanvas/widgets/title.dart';
 
+/// Shown on mobile/tablet/watch where the full editor is not available
+/// yet. Displays one of the playful [comingSoonMessages] at random.
 class ComingSoon extends StatelessWidget {
   const ComingSoon({super.key});
 
@@ -15,69 +18,66 @@ class ComingSoon extends StatelessWidget {
   Widget build(BuildContext context) {
     final random = Random().nextInt(comingSoonMessages.length);
     kLog.f(random);
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        backgroundColor: AppTheme.background,
-        centerTitle: true,
-        toolbarHeight: 100,
-        shadowColor: AppTheme.background,
-        elevation: 0,
-        title: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PhotocanvasTitle(title: 'Photocanvas'),
-          ],
+    return AppBackground(
+      child: Scaffold(
+        appBar: const AppHeader(
+          title: PhotocanvasTitle(title: 'Photocanvas'),
         ),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: SvgPicture.asset(
-                Assets.unavailable,
-                height: 50,
-                colorFilter: const ColorFilter.mode(
-                  Colors.red,
-                  BlendMode.srcIn,
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppTheme.space6),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 640),
+              child: Container(
+                padding: const EdgeInsets.all(AppTheme.space8),
+                decoration: BoxDecoration(
+                  color: AppTheme.surface.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                  border: Border.all(color: AppTheme.stroke),
+                  boxShadow: AppTheme.cardShadow,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(
+                      Assets.unavailable,
+                      height: 44,
+                      colorFilter: const ColorFilter.mode(
+                        AppTheme.warning,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.space5),
+                    Text(
+                      comingSoonMessages[random],
+                      textAlign: TextAlign.center,
+                      style: AppTheme.bodyLarge.copyWith(height: 1.65),
+                    ),
+                    const SizedBox(height: AppTheme.space6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppTheme.space3,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                        border: Border.all(color: AppTheme.strokeStrong),
+                        color: AppTheme.surfaceAlt,
+                      ),
+                      child: Text(
+                        'Desktop experience available now',
+                        style: AppTheme.bodySmall.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: ClayText(
-                comingSoonMessages[random],
-                style: AppTheme.defaultStyle.copyWith(
-                  fontSize: 35,
-                ),
-                color: AppTheme.text,
-                parentColor: AppTheme.background,
-                spread: 6,
-                depth: 25,
-                textColor: AppTheme.text,
-                emboss: true,
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: SvgPicture.asset(
-                Assets.unavailable,
-                height: 50,
-                colorFilter: const ColorFilter.mode(
-                  Colors.red,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
